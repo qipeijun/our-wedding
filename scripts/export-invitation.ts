@@ -22,6 +22,7 @@ if (!draft) {
 const escape = (value: string) => value.replace(/[&<>"']/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character]!)
 const photo = await sharp(`source/${coverPhoto.file}`).rotate().resize({ width: 1080 }).jpeg({ quality: 94 }).toBuffer()
 const venueMap = await readFile('src/assets/venue-map.svg', 'utf8')
+const doubleHappiness = (await readFile('src/assets/double-happiness-brush.webp')).toString('base64')
 const qrItems = [{ label: '查看婚礼请柬', url: wedding.publicUrl }, { label: '导航至婚礼现场', url: wedding.mapShareUrl }]
 const qrHtml = []
 await mkdir('artifacts', { recursive: true })
@@ -44,14 +45,15 @@ try {
     *{box-sizing:border-box}body{margin:0;color:#392d2b;background:#f4ebdd;font-family:"PingFang SC","Microsoft YaHei",sans-serif}
     p,h1,h2{margin:0} .poster{width:1080px}.cover{position:relative;background:#92352e}.cover>img{display:block;width:100%;height:auto}
     .title{position:absolute;top:4.5%;width:100%;text-align:center;color:#f9edda;font-family:"Songti SC",serif}
-    .title h1{font-size:${wedding.titleStyle === 'xi' ? '265' : '100'}px;font-weight:500;line-height:1.1}.title p{font-size:44px;letter-spacing:.2em;margin-top:24px}
+    .title h1{font-size:${wedding.titleStyle === 'xi' ? '265' : '100'}px;font-weight:500;line-height:1.1}.title p{font-size:34px;letter-spacing:.3em;margin-top:6px}
+    .title .xi{width:300px;height:300px;margin:auto;background-size:contain;background-repeat:no-repeat;background-position:center}
     .body{text-align:center;padding:70px 85px 65px}.draft{font-size:25px;color:#92352e;margin-bottom:25px}.names{font-family:"Songti SC",serif;font-size:60px;color:#92352e;letter-spacing:.08em}
     .date{font-size:35px;margin-top:25px}.time{font-size:30px;margin-top:16px}h2{font-family:"Songti SC",serif;font-weight:500;font-size:46px;margin:40px 0 15px}
     .address{font-size:28px;line-height:1.8;overflow-wrap:anywhere}.copy{font-size:29px;line-height:1.9;white-space:pre-line;margin-top:34px}
     .map{margin:38px auto 0;width:100%;border:1px solid #d9c4b4}.map svg{display:block;width:100%;height:auto}
     .codes{display:flex;justify-content:center;gap:100px;margin-top:45px}.codes p{font-size:26px;margin-top:16px}.qr{display:block;width:280px;height:280px}
     .qr-placeholder{width:280px;height:280px;border:2px dashed #b49a78;color:#79675c;display:flex;align-items:center;justify-content:center;font-size:24px;line-height:1.9}
-  </style></head><body><article class="poster"><div class="cover"><img src="data:image/jpeg;base64,${photo.toString('base64')}" alt="婚纱照"><div class="title"><h1>${wedding.titleStyle === 'xi' ? '囍' : escape(wedding.copy.coverSubtitle)}</h1>${wedding.titleStyle === 'xi' ? `<p>${escape(wedding.copy.coverSubtitle)}</p>` : ''}</div></div><div class="body">
+  </style></head><body><article class="poster"><div class="cover"><img src="data:image/jpeg;base64,${photo.toString('base64')}" alt="婚纱照"><div class="title">${wedding.titleStyle === 'xi' ? `<h1 class="xi" aria-label="囍" style="background-image:url(data:image/webp;base64,${doubleHappiness})"></h1><p>${escape(wedding.copy.coverSubtitle)}</p>` : `<h1>${escape(wedding.copy.coverSubtitle)}</h1>`}</div></div><div class="body">
     ${draft ? '<p class="draft">设计预览 · 二维码待生成</p>' : ''}
     <p class="names">${escape(coupleLabel(wedding))}</p><p class="date">${escape(dateLabel(wedding.weddingDate))}</p>
     <p class="time">${wedding.ceremonyTime ? `仪式 ${escape(wedding.ceremonyTime)}` : '仪式时间待确认'} · ${escape(wedding.ceremonyVenue)}</p>

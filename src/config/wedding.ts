@@ -15,12 +15,12 @@ export const wedding: WeddingConfig = {
   venueRegion: '江西省 · 赣州市 · 赣县区',
   venueAddress: '江西省赣州市赣县区梅林镇杨仙大道21号',
   location: { latitude: null, longitude: null, coordinateSystem: 'gcj02', confirmed: false },
-  invitationText: '诚挚邀请你来到我们的婚礼现场，\n共同见证这一幸福时刻。',
+  invitationText: '期待与你们，共享这一天的喜悦。',
   closingText: '期待与你相见',
   copy: {
     banquetLabel: '午宴',
     coverSubtitle: '我们结婚啦',
-    invitationHeading: '这一席，邀你入座',
+    invitationHeading: '诚邀赴宴',
     galleryHeading: '往后的日子，一起',
     galleryIntro: '从两个人的欢喜，到一辈子的日常。',
     portraitCaption: '眼里有你，笑里有光。',
@@ -29,7 +29,7 @@ export const wedding: WeddingConfig = {
     venueHeading: '赴一场欢喜之约',
     closingThanks: '感谢你，见证我们的幸福。',
   },
-  titleStyle: 'xi',
+  titleStyle: 'text',
   publicUrl: '',
   publicUrlVerifiedOn: '',
   // 新人提供并确认；已核对短链重定向为「新饭店 · 杨仙大道北侧」，未作现场路线验收。

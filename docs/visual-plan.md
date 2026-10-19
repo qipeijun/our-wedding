@@ -28,7 +28,7 @@
 
 | 文件 | 位置 | 选用理由 | 构图与裁切 | 与其他画面的关系 |
 |---|---|---|---|---|
-| 9.1032978.jpg | 封面 | 两人微笑挥手像迎接宾客，上方约 28% 留白足以承载标题，侧光与红底有层次 | 原生 2:3；完整显示；标题限于上方留白，姓名放图片外，焦点 50% 50% | 比 2955 更有互动，比 3091 更清晰正式 |
+| 9.1032978.jpg | 封面 | 两人微笑挥手像迎接宾客，上方约 28% 留白足以承载标题，侧光与红底有层次 | 原生 2:3；完整显示；标题、横排姓名与婚期限于上方留白，焦点 50% 50% | 比 2955 更有互动，比 3091 更清晰正式 |
 | 9.1032428.jpg | 邀请 | 中式礼服、牵手、自然微笑、全身完整，适合承接正式邀请 | 2:3 不裁切，较窄独立相片，与文字分栏 | 保留东方仪式感，只用一张中式避免堆砌 |
 | 9.1032999.jpg | 图库双图左 | 新郎表情自然，右侧花束形成方向 | 原生横幅，保留右侧花束 | 与新娘图构成相向关系，不能反转照片 |
 | 9.1032993.jpg | 图库双图右 | 新娘捂嘴微笑，与左侧伸入的花束呼应 | 原生横幅，保留手与花束 | 两张独立人物形成一个完整互动单元 |
@@ -88,3 +88,39 @@
 修改 `src/config/photos.ts` 的文件名、alt、顺序、布局和焦点，再运行图片生成脚本。所有模块默认按原比例显示，不以裁切解决适配问题。封面文字必须重新核对新图留白；换片后需重新截图验收，不能保证任意图片都适合既有文字区域。
 
 检查 320 / 375 / 390 / 430px 和桌面：人物头手与服装未被 CSS 裁掉、图像不变形、标题不压脸、页面没有横向溢出。实际验收结果见 `docs/verification.md`。
+
+## 第一轮整体优化试版 · 2026-10-19（已迭代）
+
+在保留 8 张原片与展示顺序的基础上，调整信息层级：
+
+- H5 封面使用本地 SVG 对称线条双喜图形；姓名和简短婚期移到照片上方留白内，替代原来的通用副标题。文字限定在原片顶部 29% 内，不与人物重叠。
+- 照片下方保留仪式/午宴时间，并提供继续浏览和直达婚礼安排两个入口。移除强制满屏高度与重复姓名、日期，320px 小屏也能先看到是谁的邀请、哪天赴约。
+- 邀请章节移除重复日程和小囍字，保留正式邀请文案、中式合照和楼栋详情入口。结尾保留新人署名，移除重复婚期和装饰囍字。
+- 静态请柬共用 SVG 图形，但保留照片下方的姓名、完整日期、楼栋日程、地图及二维码区，按独立海报阅读顺序排版。
+- 本轮为设计与排版调整，没有对人物、光影、婚纱或照片色彩进行生成式修改。
+
+检查结果：7 个尺寸图片均保持原比例；新增封面文字边界检查，确认姓名、婚期在首屏可见且位于照片留白内。390px 页面高度从 4675px 缩短到 4306px。初版截图保留在本地 `artifacts/cover-before.png` 和 `artifacts/page-before.png`，新版在 `artifacts/screenshots/`。
+
+## 第二轮书法主视觉 · 2026-10-19（已迭代）
+
+第一轮线条字形偏细、姓名日期层级较平。本轮以有笔触力度的暖白书法「囍」作为中心，左右竖排姓名，婚期在下方横排；所有文字仍位于照片顶部留白内。照片下方左侧展示仪式、午宴时间，右侧仅保留「婚礼安排」入口。
+
+邀请页标题改为左对齐的「这一席，邀你入座」，通过字号、断行与留白承接封面。图库标题增加细分隔线，日程日期字号提升。保留原有照片顺序、色彩和人物。静态请柬共用书法字形，但姓名、日期仍在照片下方独立排版。
+
+字形为独立生成的透明装饰图形，使用内置 `image_gen` 工具，未传入或修改婚纱照。生成原件保存在本地忽略目录 `artifacts/double-happiness-generated.png`；用 Sharp 等比缩至 600px、保留透明通道并输出 WebP，实际网页素材为 `src/assets/double-happiness-brush.webp`（92,040 字节）。原始生成图不提交，网站使用的优化素材随源码管理。
+
+完整生成提示词：
+
+```text
+Create ONE standalone Chinese wedding calligraphy artwork, exact single character 囍 (double happiness, two 喜 joined as a balanced coherent character). This is a production graphic for a refined modern Chinese wedding invitation overlay on a warm red photograph. Transparent background, RGBA alpha; no paper, no backdrop, no people, no surrounding frame, no stamp, no gold, no other words. Brush-painted warm ivory ink (#F9EDDA). Bold yet refined traditional Chinese running/clerical calligraphic structure, unmistakably legible 囍, wide confident horizontal strokes with elegant wedge endings and contrast of thick and thin strokes, subtle authentic dry-brush edges but a largely solid opaque ink body. Unified compact square composition with subtle human irregularity, both 喜 halves correctly formed, no extra strokes or flourishes, no long swashes. Premium contemporary Chinese wedding stationery art direction, substantial visual presence, restrained and dignified, not a thin geometric icon, not cartoon. Center artwork tightly in canvas with about 6 percent transparent breathing space on all sides. Output square high-resolution transparent PNG.
+```
+
+## 第三轮横排封面 · 2026-10-19（当前版本）
+
+此版保存为设计对比基线 V1，分支为 `codex/design-v1-horizontal`。后续设计从此基线另建分支，保留本版用于比较。当前邀请章节标题为「诚邀赴宴」，正文为「期待与你们，共享这一天的喜悦。」。
+
+新人反馈书法囍字与竖排姓名过于传统，并确认首屏须兼顾朋友与长辈。当前默认使用文字标题：原片顶部左对齐「我们结婚啦」、横排新人姓名、完整中文日期与星期。标题使用现有宋体，姓名与日期使用系统黑体；不新增字体下载、装饰或照片滤镜。
+
+照片下方依次展示赣州新饭店、两列时间与完整楼栋名称，以及足够点击面积的「导航前往」。首屏复用 GuestActions 的导航逻辑，完整日程区保留提醒和导航；两处弹层标题使用独立 ID。导航能力边界不变，微信原生定位仍待接入。
+
+首屏文字使用婚纱白 `#fff5e8`，到场信息延续全页朱红 `#92352e`、纸色 `#f4ebdd`，后续正文墨色 `#392d2b`。视觉重点为原片挥手姿态、侧光与完整婚纱，横排文字只占上方留白。390×844 可看到完整封面及导航，320×568 需轻滑查看到场信息；不通过缩小文字或裁人物强行塞入一屏。

@@ -1,6 +1,6 @@
 <template>
   <div class="guest-actions">
-    <button class="button button-light" type="button" @click="open('calendar')">
+    <button v-if="!navigationOnly" class="button button-light" type="button" @click="open('calendar')">
       <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2" /><path d="M8 3v4m8-4v4M4 10h16m-12 4h3m2 0h3" /></svg>
       设置提醒
     </button>
@@ -11,10 +11,10 @@
   </div>
 
   <Teleport to="body">
-    <dialog ref="dialog" class="action-dialog" aria-labelledby="action-title" @close="close" @click="onBackdrop">
+    <dialog ref="dialog" class="action-dialog" :aria-labelledby="titleId" @close="close" @click="onBackdrop">
       <div class="sheet-content">
         <div class="sheet-heading">
-          <h2 id="action-title">{{ mode === 'calendar' ? '把这一天，留给我们' : '赴约的路，为你备好' }}</h2>
+          <h2 :id="titleId">{{ mode === 'calendar' ? '把这一天，留给我们' : '赴约的路，为你备好' }}</h2>
           <button type="button" class="close-button" aria-label="关闭" @click="dialog?.close()">×</button>
         </div>
         <template v-if="mode === 'calendar'">
@@ -60,12 +60,19 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, ref } from 'vue'
+import { computed, onBeforeUnmount, ref, useId } from 'vue'
 import { wedding } from '../config/wedding'
 import { calendarIssues, dateLabel, eventText } from '../lib/wedding'
 import { googleCalendarUrl } from '../lib/calendar'
 import { amapUrl } from '../lib/maps'
 import CopyText from './CopyText.vue'
+
+defineProps<{
+  /** 首屏只展示导航，完整日程区同时展示提醒和导航。 */
+  navigationOnly?: boolean
+}>()
+// 首屏与日程区各有弹层实例，标题 ID 必须独立，避免辅助阅读关联到错误标题。
+const titleId = useId()
 
 /** calendar：日历操作；map：导航未就绪提示与地址复制；null：尚未打开。 */
 const mode = ref<'calendar' | 'map' | null>(null)

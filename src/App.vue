@@ -3,37 +3,29 @@
     <section class="cover" aria-label="婚礼封面">
       <div class="cover-image">
         <WeddingPhoto :photo="coverPhoto" priority />
-        <div class="cover-title" :class="{ 'cover-title-text': wedding.titleStyle === 'text' }">
-          <template v-if="wedding.titleStyle === 'xi'">
-            <h1 class="xi">囍</h1>
-            <p>{{ wedding.copy.coverSubtitle }}</p>
-          </template>
-          <h1 v-else>{{ wedding.copy.coverSubtitle }}</h1>
+        <div class="cover-title">
+          <h1 v-if="wedding.titleStyle === 'xi'" class="xi" aria-label="囍" :style="{ backgroundImage: `url(${doubleHappiness})` }"></h1>
+          <h1 v-else class="cover-text-title">{{ wedding.copy.coverSubtitle }}</h1>
+          <p class="cover-names"><span class="cover-groom">{{ wedding.groomName || '新郎姓名' }}</span><span aria-hidden="true"> · </span><span class="cover-bride">{{ wedding.brideName || '新娘姓名' }}</span></p>
+          <p class="cover-date"><time :datetime="wedding.weddingDate">{{ dateLabel(wedding.weddingDate) }}</time></p>
         </div>
       </div>
       <div class="cover-footer">
-        <p class="couple-names"><span>{{ wedding.groomName || '新郎姓名' }}</span><span class="ampersand">&</span><span>{{ wedding.brideName || '新娘姓名' }}</span></p>
-        <p class="cover-date">{{ dateLabel(wedding.weddingDate) }}</p>
-        <p class="cover-date">仪式 {{ wedding.ceremonyTime }}<template v-if="isTime(wedding.banquetTime)"> · {{ wedding.copy.banquetLabel }} {{ wedding.banquetTime }}</template></p>
-        <p v-if="!wedding.groomName || !wedding.brideName" class="pending-names">新人姓名待确认</p>
-        <a class="scroll-cue" href="#invitation" aria-label="向下浏览婚礼邀请">诚邀你，共赴欢喜 <span aria-hidden="true">↓</span></a>
+        <p class="cover-venue">{{ wedding.venueName }}</p>
+        <div class="cover-schedule">
+          <p><span><time>{{ wedding.ceremonyTime }}</time> 仪式</span><span>{{ wedding.ceremonyVenue }}</span></p>
+          <p v-if="isTime(wedding.banquetTime)"><span><time>{{ wedding.banquetTime }}</time> {{ wedding.copy.banquetLabel }}</span><span>{{ wedding.banquetVenue }}</span></p>
+        </div>
+        <GuestActions navigation-only />
       </div>
     </section>
 
     <section id="invitation" class="invitation-section section-pad" aria-labelledby="invitation-title">
-      <p class="eyebrow">一封喜帖，一份心意</p>
       <h2 id="invitation-title">{{ wedding.copy.invitationHeading }}</h2>
       <p class="invitation-copy">{{ wedding.invitationText }}</p>
-      <div class="invitation-meta">
-        <p>{{ coupleLabel(wedding) }}</p>
-        <p>{{ dateLabel(wedding.weddingDate) }}</p>
-        <p>{{ isTime(wedding.ceremonyTime) ? `仪式 ${wedding.ceremonyTime}` : '仪式时间待确认' }} · {{ wedding.ceremonyVenue }}</p>
-        <p v-if="isTime(wedding.banquetTime)">{{ wedding.copy.banquetLabel }} {{ wedding.banquetTime }} · {{ wedding.banquetVenue }}</p>
-      </div>
       <div class="invitation-composition">
         <WeddingPhoto :photo="invitationPhoto" sizes="(min-width: 600px) 280px, 52vw" />
         <div class="invitation-aside">
-          <span class="small-xi" aria-hidden="true">囍</span>
           <p class="vertical-wish">谨备喜筵<br />恭请光临</p>
           <p>{{ wedding.venueName }}</p>
           <a href="#details">查看婚礼安排 <span aria-hidden="true">↙</span></a>
@@ -88,8 +80,7 @@
         <h2>{{ wedding.closingText }}</h2>
         <p>{{ wedding.copy.closingThanks }}</p>
         <p class="closing-names">{{ coupleLabel(wedding) }}</p>
-        <p class="closing-date">{{ dateLabel(wedding.weddingDate) }}</p>
-        <a class="back-top" href="#top" aria-label="回到请柬开头">囍 <span aria-hidden="true">↑</span></a>
+        <a class="back-top" href="#top">回到开头 <span aria-hidden="true">↑</span></a>
       </div>
     </footer>
   </main>
@@ -101,6 +92,7 @@ import { coverPhoto, invitationPhoto, gallery, closingPhoto } from './config/pho
 import { coupleLabel, dateLabel, isDate, isTime } from './lib/wedding'
 import WeddingPhoto from './components/WeddingPhoto.vue'
 import GuestActions from './components/GuestActions.vue'
+import doubleHappiness from './assets/double-happiness-brush.webp'
 // 受版本管理的本地 SVG，无外部或用户输入的 HTML。
 import venueMap from './assets/venue-map.svg?raw'
 // 保留独立文件，确保小于内联阈值的 SVG 仍可在新标签页打开。
