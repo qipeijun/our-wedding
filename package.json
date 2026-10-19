@@ -1,0 +1,34 @@
+{
+  "name": "our-wedding",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "predev": "tsx scripts/prepare-calendar.ts",
+    "dev": "vite --host 0.0.0.0",
+    "typecheck": "vue-tsc --noEmit",
+    "test": "tsx --test tests/*.test.ts",
+    "build": "npm run typecheck && tsx scripts/prepare-calendar.ts && vite build",
+    "preview": "vite preview --host 0.0.0.0",
+    "photos:index": "node scripts/index-photos.mjs",
+    "photos:prepare": "tsx scripts/prepare-photos.ts",
+    "invitation:export": "tsx scripts/export-invitation.ts",
+    "test:browser": "tsx scripts/verify-browser.ts"
+  },
+  "dependencies": {
+    "vue": "^3.5.22"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "@types/qrcode": "^1.5.6",
+    "@vitejs/plugin-vue": "^6.0.1",
+    "jsqr": "^1.4.0",
+    "playwright": "^1.56.0",
+    "qrcode": "^1.5.4",
+    "sharp": "^0.35.5",
+    "tsx": "^4.20.6",
+    "typescript": "~5.9.3",
+    "vite": "^7.1.9",
+    "vue-tsc": "^3.1.0"
+  }
+}

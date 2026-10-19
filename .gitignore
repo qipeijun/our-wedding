@@ -1,0 +1,15 @@
+node_modules/
+dist/
+.DS_Store
+artifacts/
+*.local
+
+# 原始婚纱照保留在本地，网站使用 public/photos 中的精选优化版本。
+/source/
+
+# 全素材审阅图片可重新生成，保留 JSON 索引与选片清单。
+/docs/assets/thumbnails/
+/docs/assets/contact-sheet-*.jpg
+
+# 开发或构建时生成，不跟踪每次变化的 DTSTAMP。
+/public/wedding.ics
