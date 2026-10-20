@@ -3,15 +3,15 @@
   <desc id="map-description">依据提供的高德地图截图简化。新饭店位于杨仙大道靠内陆一侧，邻近赣县体育馆、赣县区文体中心，杨仙大道另一侧为滨江公园及贡水。非等比例，不标注主楼、附楼和入口的精确位置。</desc>
   <defs>
     <style>
-      text{font-family:"PingFang SC","Microsoft YaHei",sans-serif;fill:#795b51}
+      text{font-family:"PingFang SC","Microsoft YaHei",sans-serif;fill:#76645B}
       .road{fill:none;stroke:#ab7f6f;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}
       .building{fill:none;stroke:#b28c7c;stroke-width:1.2;stroke-linejoin:round}
       .label{font-size:18px;text-anchor:middle}
-      .halo{paint-order:stroke;stroke:#f4ebdd;stroke-width:7px;stroke-linejoin:round}
+      .halo{paint-order:stroke;stroke:#FAF5ED;stroke-width:7px;stroke-linejoin:round}
     </style>
     <clipPath id="map-boundary"><rect x="22" y="80" width="436" height="310"/></clipPath>
   </defs>
-  <path fill="#f4ebdd" d="M0 0h480v450H0z"/>
+  <path fill="#FAF5ED" d="M0 0h480v450H0z"/>
   <g clip-path="url(#map-boundary)">
     <!-- 沿原截图保留河岸、临江道路与地标之间的关系；线条经概括，不表达精确距离。 -->
     <path d="M-10 372Q171 361 305 313T493 170L493 404H-10Z" fill="#eadfd0"/>
@@ -31,7 +31,7 @@
       <path d="M104 238 221 194 366 139M108 249 225 205 370 150"/>
     </g>
     <text class="label halo" x="139" y="151" transform="rotate(-22 139 151)">城南大道</text>
-    <text class="label halo" x="330" y="273" transform="rotate(-24 330 273)" style="fill:#92352e">杨仙大道</text>
+    <text class="label halo" x="330" y="273" transform="rotate(-24 330 273)" style="fill:#8F2F28">杨仙大道</text>
     <!-- 只绘制截图中可辨认的周边地标，不虚构酒店楼栋轮廓。 -->
     <g class="building">
       <path d="M128 185q23-13 43-7t13 19q-6 13-27 15t-31-7q-9-10 2-20Z"/>
@@ -43,11 +43,11 @@
     <text class="label halo" x="150" y="231" style="font-size:16px">梅林古镇</text>
     <text class="label halo" x="285" y="179">赣县体育馆</text>
     <text class="label halo" x="175" y="312" style="font-size:16px">赣县区文体中心</text>
-    <path d="M280 244c-7 0-12 5-12 12 0 9 12 20 12 20s12-11 12-20c0-7-5-12-12-12Z" fill="#92352e"/>
-    <circle cx="280" cy="255" r="3.5" fill="#f4ebdd"/>
-    <path d="m290 248 16-13h71" fill="none" stroke="#92352e" stroke-width="1.3"/>
-    <text x="309" y="226" style="fill:#92352e;font-size:24px;font-family:'Songti SC',serif">新饭店</text>
+    <path d="M280 244c-7 0-12 5-12 12 0 9 12 20 12 20s12-11 12-20c0-7-5-12-12-12Z" fill="#8F2F28"/>
+    <circle cx="280" cy="255" r="3.5" fill="#FAF5ED"/>
+    <path d="m290 248 16-13h71" fill="none" stroke="#8F2F28" stroke-width="1.3"/>
+    <text x="309" y="226" style="fill:#8F2F28;font-size:24px;font-family:'Songti SC',serif">新饭店</text>
     <text class="label halo" x="205" y="353" style="font-size:16px">樱花锦公园</text>
-    <text x="352" y="370" text-anchor="middle" style="font-size:19px;font-family:'Songti SC',serif;letter-spacing:12px;fill:#967f6f" transform="rotate(-23 352 370)">贡水</text>
+    <text x="352" y="370" text-anchor="middle" style="font-size:19px;font-family:'Songti SC',serif;letter-spacing:12px;fill:#76645B" transform="rotate(-23 352 370)">贡水</text>
   </g>
 </svg>
