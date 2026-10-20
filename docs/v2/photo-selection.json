@@ -1,0 +1,316 @@
+[
+  {
+    "id": "formal-main",
+    "file": "9.1032428.jpg",
+    "alt": "中式礼服的新人牵手站立，新娘手持团扇",
+    "sha256": "ff4f524b96f16b47d885d7d8efb2735a202a193f88e87611678af540a145ed37",
+    "width": 4000,
+    "height": 6000,
+    "originalActuallyViewed": true,
+    "reviewDate": "2026-10-20",
+    "crop": "none",
+    "focalPosition": "not needed: intrinsic ratio",
+    "selected": true,
+    "status": "已选用",
+    "outputs": [],
+    "reason": "中式牵手合影保留团扇、衣饰与完整人物；备用图未启用"
+  },
+  {
+    "id": "quiet",
+    "file": "9.1032698.jpg",
+    "alt": "灰色背景前，新郎轻吻新娘的手，新娘微笑注视他",
+    "sha256": "ec84b17f4c11cf69ed35b3d2b47cf54c182d59382c1ddbc02708d8834ac85460",
+    "width": 6000,
+    "height": 4000,
+    "originalActuallyViewed": true,
+    "reviewDate": "2026-10-20",
+    "crop": "none",
+    "focalPosition": "not needed: intrinsic ratio",
+    "selected": true,
+    "status": "已选用",
+    "outputs": [
+      {
+        "path": "public/photos/9.1032698-480.webp",
+        "width": 480,
+        "height": 320,
+        "bytes": 14624
+      },
+      {
+        "path": "public/photos/9.1032698-800.webp",
+        "width": 800,
+        "height": 533,
+        "bytes": 31564
+      },
+      {
+        "path": "public/photos/9.1032698-1200.webp",
+        "width": 1200,
+        "height": 800,
+        "bytes": 60282
+      },
+      {
+        "path": "public/photos/9.1032698-1600.webp",
+        "width": 1600,
+        "height": 1067,
+        "bytes": 101882
+      },
+      {
+        "path": "public/photos/9.1032698-1200.jpg",
+        "width": 1200,
+        "height": 800,
+        "bytes": 92242
+      }
+    ],
+    "reason": "执行包确定的六张照片之一；原比例保留神态和手部，不叠加滤镜"
+  },
+  {
+    "id": "rings",
+    "file": "9.1032932.jpg",
+    "alt": "两人举起戒指，面向镜头开怀微笑",
+    "sha256": "a0664652b58223c48b4e5f09a2fff8a03119ca19925f956a3e84eccc18444600",
+    "width": 6000,
+    "height": 4000,
+    "originalActuallyViewed": true,
+    "reviewDate": "2026-10-20",
+    "crop": "none",
+    "focalPosition": "not needed: intrinsic ratio",
+    "selected": true,
+    "status": "已选用",
+    "outputs": [
+      {
+        "path": "public/photos/9.1032932-480.webp",
+        "width": 480,
+        "height": 320,
+        "bytes": 19294
+      },
+      {
+        "path": "public/photos/9.1032932-800.webp",
+        "width": 800,
+        "height": 533,
+        "bytes": 39668
+      },
+      {
+        "path": "public/photos/9.1032932-1200.webp",
+        "width": 1200,
+        "height": 800,
+        "bytes": 70036
+      },
+      {
+        "path": "public/photos/9.1032932-1600.webp",
+        "width": 1600,
+        "height": 1067,
+        "bytes": 114632
+      },
+      {
+        "path": "public/photos/9.1032932-1200.jpg",
+        "width": 1200,
+        "height": 800,
+        "bytes": 108683
+      }
+    ],
+    "reason": "执行包确定的六张照片之一；原比例保留神态和手部，不叠加滤镜"
+  },
+  {
+    "id": "formal-fallback",
+    "file": "9.1032955.jpg",
+    "alt": "暖红背景前，新人站立合影，婚纱裙摆完整展开",
+    "sha256": "1ace38b7a439833d21883ca540d8f882ef4d7cfe10ffd4051db812e7d4452569",
+    "width": 4000,
+    "height": 6000,
+    "originalActuallyViewed": true,
+    "reviewDate": "2026-10-20",
+    "crop": "none",
+    "focalPosition": "not needed: intrinsic ratio",
+    "selected": false,
+    "status": "备用，未使用",
+    "outputs": [],
+    "reason": "中式牵手合影保留团扇、衣饰与完整人物；备用图未启用"
+  },
+  {
+    "id": "cover",
+    "file": "9.1032978.jpg",
+    "alt": "暖红背景前，两人微笑挥手，新娘的婚纱完整展开",
+    "sha256": "9b37b11185726a71c3e53bdb0857f89225b7e50f3e812fb3910c974a13f2786a",
+    "width": 4000,
+    "height": 6000,
+    "originalActuallyViewed": true,
+    "reviewDate": "2026-10-20",
+    "crop": "none",
+    "focalPosition": "not needed: intrinsic ratio",
+    "selected": true,
+    "status": "已选用",
+    "outputs": [
+      {
+        "path": "public/photos/9.1032978-480.webp",
+        "width": 480,
+        "height": 720,
+        "bytes": 33658
+      },
+      {
+        "path": "public/photos/9.1032978-800.webp",
+        "width": 800,
+        "height": 1200,
+        "bytes": 73664
+      },
+      {
+        "path": "public/photos/9.1032978-1200.webp",
+        "width": 1200,
+        "height": 1800,
+        "bytes": 143388
+      },
+      {
+        "path": "public/photos/9.1032978-1600.webp",
+        "width": 1600,
+        "height": 2400,
+        "bytes": 233166
+      },
+      {
+        "path": "public/photos/9.1032978-1200.jpg",
+        "width": 1200,
+        "height": 1800,
+        "bytes": 229940
+      }
+    ],
+    "reason": "执行包确定的六张照片之一；原比例保留神态和手部，不叠加滤镜"
+  },
+  {
+    "id": "response-bride",
+    "file": "9.1032993.jpg",
+    "alt": "新娘捂嘴微笑，画面左侧的手递上花束",
+    "sha256": "85e31718b938a2264b1a1edad10da90593e29587b23e7e4997a58c4c5e747f85",
+    "width": 5881,
+    "height": 3921,
+    "originalActuallyViewed": true,
+    "reviewDate": "2026-10-20",
+    "crop": "none",
+    "focalPosition": "not needed: intrinsic ratio",
+    "selected": true,
+    "status": "已选用",
+    "outputs": [
+      {
+        "path": "public/photos/9.1032993-480.webp",
+        "width": 480,
+        "height": 320,
+        "bytes": 24718
+      },
+      {
+        "path": "public/photos/9.1032993-800.webp",
+        "width": 800,
+        "height": 533,
+        "bytes": 52542
+      },
+      {
+        "path": "public/photos/9.1032993-1200.webp",
+        "width": 1200,
+        "height": 800,
+        "bytes": 96212
+      },
+      {
+        "path": "public/photos/9.1032993-1600.webp",
+        "width": 1600,
+        "height": 1067,
+        "bytes": 146842
+      },
+      {
+        "path": "public/photos/9.1032993-1200.jpg",
+        "width": 1200,
+        "height": 800,
+        "bytes": 132509
+      }
+    ],
+    "reason": "执行包确定的六张照片之一；原比例保留神态和手部，不叠加滤镜"
+  },
+  {
+    "id": "response-groom",
+    "file": "9.1032999.jpg",
+    "alt": "新郎微笑，画面右侧伸来的手递上花束",
+    "sha256": "c1eea15209d4c0b13ee4878e4b36937f0408354611d682936e242fdd75406252",
+    "width": 5881,
+    "height": 3921,
+    "originalActuallyViewed": true,
+    "reviewDate": "2026-10-20",
+    "crop": "none",
+    "focalPosition": "not needed: intrinsic ratio",
+    "selected": true,
+    "status": "已选用",
+    "outputs": [
+      {
+        "path": "public/photos/9.1032999-480.webp",
+        "width": 480,
+        "height": 320,
+        "bytes": 21616
+      },
+      {
+        "path": "public/photos/9.1032999-800.webp",
+        "width": 800,
+        "height": 533,
+        "bytes": 44838
+      },
+      {
+        "path": "public/photos/9.1032999-1200.webp",
+        "width": 1200,
+        "height": 800,
+        "bytes": 82024
+      },
+      {
+        "path": "public/photos/9.1032999-1600.webp",
+        "width": 1600,
+        "height": 1067,
+        "bytes": 124610
+      },
+      {
+        "path": "public/photos/9.1032999-1200.jpg",
+        "width": 1200,
+        "height": 800,
+        "bytes": 117843
+      }
+    ],
+    "reason": "执行包确定的六张照片之一；原比例保留神态和手部，不叠加滤镜"
+  },
+  {
+    "id": "closing",
+    "file": "9.1033008.jpg",
+    "alt": "两人在暖红背景前靠近微笑，新娘手持花束",
+    "sha256": "94829f41a73da227bac33a8255c1c458f6c46747508d663c05614a46d9a19983",
+    "width": 4000,
+    "height": 6000,
+    "originalActuallyViewed": true,
+    "reviewDate": "2026-10-20",
+    "crop": "none",
+    "focalPosition": "not needed: intrinsic ratio",
+    "selected": true,
+    "status": "已选用",
+    "outputs": [
+      {
+        "path": "public/photos/9.1033008-480.webp",
+        "width": 480,
+        "height": 720,
+        "bytes": 40756
+      },
+      {
+        "path": "public/photos/9.1033008-800.webp",
+        "width": 800,
+        "height": 1200,
+        "bytes": 85606
+      },
+      {
+        "path": "public/photos/9.1033008-1200.webp",
+        "width": 1200,
+        "height": 1800,
+        "bytes": 155696
+      },
+      {
+        "path": "public/photos/9.1033008-1600.webp",
+        "width": 1600,
+        "height": 2400,
+        "bytes": 252820
+      },
+      {
+        "path": "public/photos/9.1033008-1200.jpg",
+        "width": 1200,
+        "height": 1800,
+        "bytes": 247367
+      }
+    ],
+    "reason": "执行包确定的六张照片之一；原比例保留神态和手部，不叠加滤镜"
+  }
+]

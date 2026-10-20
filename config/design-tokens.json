@@ -1,0 +1,94 @@
+{
+  "colors": {
+    "brand": "#A93624",
+    "brandDeep": "#852D27",
+    "paper": "#FFF8F0",
+    "ink": "#302426",
+    "muted": "#79625E",
+    "rule": "#DDC9BC",
+    "qrDark": "#332C28",
+    "qrLight": "#FAF5ED"
+  },
+  "typography": {
+    "displayFamilyPreferred": "Source Han Serif SC",
+    "displayFallback": "Noto Serif CJK SC, Songti SC, STSong, serif",
+    "bodyFamilyPreferred": "system-ui, -apple-system, BlinkMacSystemFont, PingFang SC, Microsoft YaHei, sans-serif",
+    "h5BodyPx": 17,
+    "posterFriendsBodyPx": 17,
+    "posterFormalBodyPx": 18,
+    "h5NamePx": [
+      24,
+      28
+    ],
+    "posterNamePx": [
+      26,
+      30
+    ],
+    "h5TitlePx": [
+      28,
+      34
+    ],
+    "xiPx": [
+      64,
+      80
+    ],
+    "bodyLineHeight": 1.65,
+    "titleLineHeight": 1.25,
+    "forbidden": [
+      "faux gold gradient",
+      "thin decorative calligraphy",
+      "excessive tracking",
+      "letter separators"
+    ]
+  },
+  "spacingPx": [
+    4,
+    8,
+    12,
+    16,
+    24,
+    32,
+    48,
+    64
+  ],
+  "layout": {
+    "mobileWidthsToTest": [
+      320,
+      360,
+      390,
+      430
+    ],
+    "mobileMaxWidth": 560,
+    "desktopWidthToTest": 1440,
+    "h5GutterPx": 32,
+    "posterLogicalWidth": 360,
+    "posterExportScale": 3,
+    "posterExportWidth": 1080,
+    "posterContentGutterPx": 26,
+    "posterHeight": "content-driven; never crop lower content",
+    "photoRadiusPx": 0,
+    "buttonRadiusPx": 2,
+    "touchTargetPx": 48,
+    "stickyBarPx": 60
+  },
+  "motion": {
+    "enterMs": 850,
+    "maxTranslateYPx": 18,
+    "respectReducedMotion": true,
+    "defaultContentVisible": true,
+    "autoplay": false
+  },
+  "qr": {
+    "quietZoneModules": 4,
+    "preferredErrorCorrection": "M",
+    "optionalErrorCorrection": "Q only if measured scan reliability improves",
+    "minModulePxAt1080": 6,
+    "targetPrintedBoxPx": [
+      246,
+      300
+    ],
+    "minimumGapPxAt1080": 72,
+    "noLogo": true,
+    "integerModuleScale": true
+  }
+}

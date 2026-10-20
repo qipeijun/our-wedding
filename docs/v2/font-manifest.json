@@ -1,0 +1,11 @@
+{
+  "source": "Adobe Source Han Serif CN SemiBold",
+  "sourceUrl": "https://github.com/adobe-fonts/source-han-serif/tree/release/SubsetOTF/CN",
+  "sha256": "50d3f12201ce2dd840650b6bfa47ebb8572ecf767eec0e5ccb20a247b5bfa805",
+  "subsetFamily": "Wedding Serif",
+  "weight": 600,
+  "glyphCharacters": 275,
+  "missing": [],
+  "outputBytes": 62696,
+  "license": "SIL OFL 1.1; public/fonts/OFL.txt"
+}

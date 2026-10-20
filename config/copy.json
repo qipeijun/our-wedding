@@ -1,0 +1,138 @@
+{
+  "schemaVersion": "1.0",
+  "language": "zh-CN",
+  "priority": "Latest user-approved warm copy; replaces older boilerplate",
+  "h5": {
+    "title": "我们结婚啦",
+    "names": "戚培俊 · 涂丽纯",
+    "invitationParagraphs": [
+      "诚邀您参加我们的婚礼，见证我们成为一家人。"
+    ],
+    "closing": "盼与您相聚。",
+    "closingNames": "戚培俊 · 涂丽纯",
+    "welcomeLabel": "致亲爱的家人和朋友",
+    "welcomeTitle": [
+      "这份喜悦，",
+      "想与您分享。"
+    ],
+    "responseTitle": "照片里的欢喜",
+    "scheduleTitle": "这一天，盼您来。",
+    "closingLabel": "诚挚邀请"
+  },
+  "variants": {
+    "friends": {
+      "title": "我们结婚啦",
+      "nameMode": "couple",
+      "names": [
+        {
+          "name": "戚培俊",
+          "relation": null
+        },
+        {
+          "name": "涂丽纯",
+          "relation": null
+        }
+      ],
+      "bodyParagraphs": [
+        "我们人生中很重要的一天，想邀请你一起度过。",
+        "来喝杯喜酒，和我们拍张合照。"
+      ],
+      "optionalClosing": "期待见到你。",
+      "signature": null,
+      "mainPhoto": "9.1032978.jpg",
+      "fallbackPhoto": null
+    },
+    "elders": {
+      "title": "婚礼邀请",
+      "nameMode": "couple",
+      "names": [
+        {
+          "name": "戚培俊",
+          "relation": null
+        },
+        {
+          "name": "涂丽纯",
+          "relation": null
+        }
+      ],
+      "bodyParagraphs": [
+        "我们即将携手成家，诚挚邀请您到场见证。",
+        "有您的祝福，这一天会更加温暖。"
+      ],
+      "optionalClosing": "盼与您相聚，共享喜悦。",
+      "signature": null,
+      "mainPhoto": "9.1032428.jpg",
+      "fallbackPhoto": "9.1032955.jpg"
+    },
+    "groom-parents": {
+      "title": "婚礼邀请",
+      "nameMode": "relations",
+      "names": [
+        {
+          "name": "戚培俊",
+          "relation": "儿子"
+        },
+        {
+          "name": "涂丽纯",
+          "relation": "儿媳"
+        }
+      ],
+      "bodyParagraphs": [
+        "孩子们即将携手成家，我们满怀欢喜。",
+        "诚邀您来喝杯喜酒，与我们一同分享这份喜悦。"
+      ],
+      "optionalClosing": null,
+      "signature": "戚本亮 · 尹李英 敬邀",
+      "mainPhoto": "9.1032428.jpg",
+      "fallbackPhoto": "9.1032955.jpg"
+    },
+    "bride-parents": {
+      "title": "婚礼邀请",
+      "nameMode": "relations",
+      "names": [
+        {
+          "name": "涂丽纯",
+          "relation": "女儿"
+        },
+        {
+          "name": "戚培俊",
+          "relation": "女婿"
+        }
+      ],
+      "bodyParagraphs": [
+        "孩子们即将携手成家，我们满怀欢喜。",
+        "诚邀您来喝杯喜酒，与我们一同分享这份喜悦。"
+      ],
+      "optionalClosing": null,
+      "signature": "涂如古 · 沈慧琪 敬邀",
+      "mainPhoto": "9.1032428.jpg",
+      "fallbackPhoto": "9.1032955.jpg"
+    }
+  },
+  "ui": {
+    "scheduleHeading": "婚礼安排",
+    "venueHeading": "到场指南",
+    "navigation": "导航到新饭店",
+    "copyAddress": "复制地址",
+    "copySuccess": "地址已复制",
+    "copyFallback": "请长按下方文字，选择复制。",
+    "contact": "致电新郎",
+    "jumpToDetails": "时间与地点",
+    "close": "关闭",
+    "photoError": "照片暂未加载成功",
+    "retry": "重新加载",
+    "qrHint": "长按识别对应二维码",
+    "backToTop": "返回顶部"
+  },
+  "copyAddressText": "新饭店｜江西省赣州市赣县区杨仙大道北侧\n仪式：附楼四合院（11:00）\n婚宴：主楼A栋三楼5号厅（12:00）",
+  "metadata": {
+    "title": "戚培俊与涂丽纯的婚礼邀请",
+    "description": "2026年12月24日，赣县新饭店。诚邀您来参加我们的婚礼。"
+  },
+  "layoutRules": {
+    "lineBreaksAreFlexible": true,
+    "namesMustNotSplit": true,
+    "optionalClosingsMayBeOmitted": true,
+    "noExtraEmotionalCopy": true
+  }
+}

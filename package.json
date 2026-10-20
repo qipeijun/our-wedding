@@ -4,16 +4,21 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "predev": "tsx scripts/prepare-calendar.ts",
+    "predev": "tsx scripts/prepare-content.ts",
     "dev": "vite --host 0.0.0.0",
     "typecheck": "vue-tsc --noEmit",
     "test": "tsx --test tests/*.test.ts",
-    "build": "npm run typecheck && tsx scripts/prepare-calendar.ts && vite build",
+    "build": "tsx scripts/prepare-content.ts && npm run typecheck && vite build",
     "preview": "vite preview --host 0.0.0.0",
     "photos:index": "node scripts/index-photos.mjs",
     "photos:prepare": "tsx scripts/prepare-photos.ts",
     "invitation:export": "tsx scripts/export-invitation.ts",
-    "test:browser": "tsx scripts/verify-browser.ts"
+    "test:browser": "tsx scripts/verify-browser.ts",
+    "content:prepare": "tsx scripts/prepare-content.ts",
+    "qa:content": "tsx scripts/verify-content.ts",
+    "qa:qr": "tsx scripts/verify-qr.ts",
+    "qa:visual": "tsx scripts/verify-browser.ts",
+    "fonts:prepare": "python3 scripts/prepare-fonts.py"
   },
   "dependencies": {
     "vue": "^3.5.22"

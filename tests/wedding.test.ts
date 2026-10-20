@@ -1,125 +1,64 @@
-import { test } from 'node:test'
+import test from 'node:test'
 import assert from 'node:assert/strict'
-import { wedding } from '../src/config/wedding'
-import { createCalendar, foldLine, googleCalendarUrl } from '../src/lib/calendar'
-import { calendarIssues, dateLabel, eventText, isDate, isTime } from '../src/lib/wedding'
-import { amapUrl, locationIssues } from '../src/lib/maps'
-import type { WeddingConfig } from '../src/types'
+import { readFile, readdir } from 'node:fs/promises'
+import { wedding, copy, essentialHtml } from '../scripts/lib/content'
+import { selectedPhotos } from '../src/config/photos'
 
-// 测试覆盖正式配置的姓名、日期、场地和坐标，不将测试内容当作婚礼事实。
-const fixture = (): WeddingConfig => ({ ...wedding,
-  groomName: '测试甲', brideName: '测试乙', weddingDate: '2030-01-02',
-  ceremonyTime: '00:30', banquetTime: '', endTime: '02:00', venueName: '测试地点', venueAddress: '测试地址，不代表婚礼场地',
-  ceremonyVenue: '测试附楼', banquetVenue: '测试主楼',
-  mapShareUrl: '', mapShareUrlVerifiedOn: '',
-  location: { latitude: 30, longitude: 110, coordinateSystem: 'gcj02', confirmed: true },
+test('正式事实与交接规范一致，日期不受设备时区影响', () => {
+  assert.deepEqual(wedding.couple, { groom: '戚培俊', bride: '涂丽纯', displayName: '戚培俊 · 涂丽纯' })
+  assert.equal(wedding.date.iso, '2026-12-24')
+  assert.equal(new Intl.DateTimeFormat('zh-CN', { weekday: 'long', timeZone: wedding.date.timeZone }).format(new Date(`${wedding.date.iso}T12:00:00+08:00`)), wedding.date.weekday)
+  assert.equal(wedding.date.lunarFull, '农历丙午年十一月十六')
+  assert.deepEqual(wedding.schedule.map(item => [item.time, item.location]), [['10:30', null], ['11:00', '附楼四合院'], ['12:00', '主楼A栋三楼5号厅']])
+  assert.equal(wedding.venue.name, '新饭店')
+  assert.equal(wedding.venue.address, '江西省赣州市赣县区杨仙大道北侧')
+  assert.equal(wedding.contact.phone, '18126072587')
+  assert.equal(wedding.contact.href, `tel:${wedding.contact.phone}`)
 })
 
-test('拒绝无效日期、宽松时间和自动归一化日期', () => {
-  for (const value of ['', '2030-02-30', '2030-2-01', '2030-13-01']) assert.equal(isDate(value), false)
-  assert.equal(isDate('2028-02-29'), true)
-  assert.equal(isDate('2029-02-29'), false)
-  for (const value of ['24:00', '12:60', '8:30', '']) assert.equal(isTime(value), false)
-  assert.equal(isTime('08:30'), true)
-})
-test('缺少时间不能生成正式日历，缺少地址不能生成地图', () => {
-  const config = { ...fixture(), ceremonyTime: '', endTime: '', venueAddress: '',
-    location: { ...fixture().location, latitude: null, longitude: null, confirmed: false } }
-  assert.ok(calendarIssues(config).length > 0)
-  assert.throws(() => createCalendar(config), /信息不完整/)
-  assert.equal(googleCalendarUrl(config), '')
-  assert.equal(amapUrl(config), '')
-})
-test('中国凌晨转换到前一天 UTC，含两次真实提醒', () => {
-  const ics = createCalendar(fixture(), new Date('2029-12-01T00:00:00Z'))
-  assert.match(ics, /DTSTART:20300101T163000Z\r\n/)
-  assert.match(ics, /DTEND:20300101T180000Z\r\n/)
-  assert.match(ics, /DTSTAMP:20291201T000000Z/)
-  assert.match(ics, /X-WR-TIMEZONE:Asia\/Shanghai/)
-  assert.match(ics, /TRIGGER:-P1D/)
-  assert.match(ics, /TRIGGER:-PT2H/)
-  assert.equal(ics.split('BEGIN:VALARM').length - 1, 2)
-})
-test('结束时间不得早于开始，跨日必须明确日期', () => {
-  const config = { ...fixture(), ceremonyTime: '23:30', endTime: '01:00' }
-  assert.ok(calendarIssues(config).includes('晚于开始的结束时间'))
-  config.endDate = '2030-01-03'
-  assert.deepEqual(calendarIssues(config), [])
-  assert.match(createCalendar(config), /DTEND:20300102T170000Z/)
-})
-test('结束时间未定仍可生成赴约提醒，不猜测时长或生成无效在线日历', () => {
-  const config = { ...fixture(), ceremonyTime: '11:00', endTime: '' }
-  assert.deepEqual(calendarIssues(config), [])
-  const ics = createCalendar(config).replaceAll('\r\n ', '')
-  assert.match(ics, /DTSTART:20300102T030000Z/)
-  assert.match(ics, /婚礼赴约提醒/)
-  assert.doesNotMatch(ics, /DTEND:|DURATION:/)
-  assert.match(ics, /TRIGGER:-P1D/)
-  assert.match(ics, /TRIGGER:-PT2H/)
-  assert.equal(googleCalendarUrl(config), '')
-  assert.ok(calendarIssues({ ...config, endDate: '2030-01-03' }).includes('结束日期对应的结束时间'))
-  assert.ok(calendarIssues({ ...config, endTime: '25:00' }).includes('结束时间'))
-})
-test('可选宴席时间也必须有效', () => {
-  assert.ok(calendarIssues({ ...fixture(), banquetTime: '25:00' }).includes('宴席时间'))
-})
-test('复制信息和两种日历均保留仪式、宴席各自的时间与楼栋', () => {
-  const config = { ...fixture(), ceremonyTime: '11:00', banquetTime: '12:00', endTime: '14:00' }
-  for (const text of [eventText(config), createCalendar(config).replaceAll('\r\n ', ''), new URL(googleCalendarUrl(config)).searchParams.get('details')!]) {
-    assert.match(text, /仪式 11:00（中国标准时间） · 测试附楼/)
-    assert.match(text, /午宴 12:00 · 测试主楼/)
+test('四种邀请主体和父母落款各自正确，女方版女儿在先', () => {
+  for (const id of ['friends', 'elders'] as const) {
+    assert.equal(copy.variants[id].signature, null)
+    assert.deepEqual(copy.variants[id].names.map(item => item.name), [wedding.couple.groom, wedding.couple.bride])
   }
+  assert.deepEqual(copy.variants['groom-parents'].names, [{ name: '戚培俊', relation: '儿子' }, { name: '涂丽纯', relation: '儿媳' }])
+  assert.deepEqual(copy.variants['bride-parents'].names, [{ name: '涂丽纯', relation: '女儿' }, { name: '戚培俊', relation: '女婿' }])
+  assert.equal(copy.variants['groom-parents'].signature, '戚本亮 · 尹李英 敬邀')
+  assert.equal(copy.variants['bride-parents'].signature, '涂如古 · 沈慧琪 敬邀')
+  assert.equal(copy.variants['groom-parents'].signature, wedding.parents.groom.signature)
+  assert.equal(copy.variants['bride-parents'].signature, wedding.parents.bride.signature)
 })
-test('中文和 emoji 折行每物理行最多 75 UTF-8 字节且不损坏字符', () => {
-  const input = 'DESCRIPTION:' + '愿你幸福🙂'.repeat(30)
-  const output = foldLine(input)
-  assert.equal(output.replaceAll('\r\n ', ''), input)
-  for (const line of output.split('\r\n')) assert.ok(Buffer.byteLength(line) <= 75)
+
+test('导航与二维码逐字沿用正式网址', () => {
+  assert.equal(wedding.publicUrl, 'https://qipeijun.github.io/our-wedding/')
+  assert.equal(wedding.venue.mapUrl, 'https://surl.amap.com/2siOh8Ng46li')
+  assert.deepEqual(wedding.qr.map(item => [item.id, item.url]), [['wedding', wedding.publicUrl], ['navigation', wedding.venue.mapUrl]])
+  assert.equal(new URL(wedding.publicUrl).pathname, wedding.deployment.currentPublicPath)
+  for (const item of wedding.schedule.filter(item => item.location)) assert.ok(copy.copyAddressText.includes(item.location!))
 })
-test('日历文本转义特殊字符，换行不能注入属性', () => {
-  const config = { ...fixture(), invitationText: '你好,朋友;\\\nATTENDEE:example' }
-  const ics = createCalendar(config).replaceAll('\r\n ', '')
-  assert.ok(ics.includes('DESCRIPTION:你好\\,朋友\\;\\\\\\nATTENDEE:example'))
-  assert.ok(!ics.includes('\r\nATTENDEE:'))
+
+test('H5使用新邀请短稿，请帖文案保持独立，无旧示例或虚构信息', () => {
+  assert.deepEqual(copy.h5.invitationParagraphs, ['诚邀您参加我们的婚礼，见证我们成为一家人。'])
+  assert.deepEqual(copy.variants.friends.bodyParagraphs, ['我们人生中很重要的一天，想邀请你一起度过。', '来喝杯喜酒，和我们拍张合照。'])
+  assert.deepEqual(copy.variants.elders.bodyParagraphs, ['我们即将携手成家，诚挚邀请您到场见证。', '有您的祝福，这一天会更加温暖。'])
+  for (const id of ['groom-parents', 'bride-parents'] as const) assert.deepEqual(copy.variants[id].bodyParagraphs, ['孩子们即将携手成家，我们满怀欢喜。', '诚邀您来喝杯喜酒，与我们一同分享这份喜悦。'])
+  assert.equal(copy.h5.names, wedding.couple.displayName)
+  assert.equal(copy.h5.closingNames, wedding.couple.displayName)
+  assert.doesNotMatch(JSON.stringify(copy), /张先生|李女士|2025年|梅林大街|拨冗|恋爱[0-9]/)
 })
-test('修改活动时间保留事件 UID，在线日历也使用正确 UTC', () => {
-  const config = fixture()
-  const first = createCalendar(config)
-  config.weddingDate = '2030-01-03'
-  const second = createCalendar(config)
-  assert.equal(first.match(/UID:(.*)/)?.[1], second.match(/UID:(.*)/)?.[1])
-  const url = new URL(googleCalendarUrl(config))
-  assert.equal(url.searchParams.get('dates'), '20300102T163000Z/20300102T180000Z')
-  assert.equal(url.searchParams.get('ctz'), 'Asia/Shanghai')
+
+test('不运行日历流程，静态基础信息不含结束时间', async () => {
+  const pkg = JSON.parse(await readFile('package.json', 'utf8'))
+  assert.doesNotMatch(JSON.stringify(pkg.scripts), /prepare-calendar|\.ics/)
+  assert.equal(wedding.features.calendar, false)
+  const html = essentialHtml()
+  assert.ok(html.includes(wedding.contact.phone))
+  assert.ok(html.includes('主楼A栋三楼5号厅'))
+  assert.doesNotMatch(html, /14:00|\.ics|webcal:/)
+  assert.equal((await readdir('public')).some(file => file.endsWith('.ics')), false)
 })
-test('普通浏览器使用高德，遵循经度在前及 GCJ-02 契约', () => {
-  const url = new URL(amapUrl(fixture()))
-  assert.equal(url.origin, 'https://uri.amap.com')
-  assert.equal(url.searchParams.get('position'), '110,30')
-  assert.equal(url.searchParams.get('coordinate'), 'gaode')
-  assert.equal(url.searchParams.get('callnative'), '0')
-})
-test('已确认分享链接优先于地址搜索，不依赖另填坐标', () => {
-  const config = { ...fixture(), mapShareUrl: 'https://surl.amap.com/2siOh8Ng46li',
-    location: { ...fixture().location, latitude: null, longitude: null, confirmed: false } }
-  assert.equal(amapUrl(config), config.mapShareUrl)
-  assert.equal(new URL(amapUrl({ ...config, mapShareUrl: 'javascript:alert(1)' })).pathname, '/search')
-})
-test('缺失或无效坐标只允许完整地址搜索，不生成精确标注', () => {
-  for (const location of [
-    { ...fixture().location, latitude: null }, { ...fixture().location, longitude: NaN },
-    { ...fixture().location, latitude: 91 }, { ...fixture().location, confirmed: false },
-  ]) {
-    assert.ok(locationIssues({ ...fixture(), location }).length)
-    const url = new URL(amapUrl({ ...fixture(), location }))
-    assert.equal(url.origin, 'https://uri.amap.com')
-    assert.equal(url.pathname, '/search')
-    assert.equal(url.searchParams.get('keyword'), fixture().venueAddress)
-    assert.equal(url.searchParams.has('position'), false)
-    assert.equal(url.searchParams.get('callnative'), '0')
-  }
-})
-test('日期显示在中国时区，未配置时保持待确认', () => {
-  assert.equal(dateLabel(''), '婚期敬待公布')
-  assert.match(dateLabel('2030-01-02'), /2030年1月2日/)
+
+test('首版六张网页照片与三张正式请帖主图保持规定角色', () => {
+  assert.equal(selectedPhotos.filter(item => !item.id.startsWith('formal-')).length, 6)
+  for (const id of ['elders', 'groom-parents', 'bride-parents'] as const) assert.equal(copy.variants[id].mainPhoto, '9.1032428.jpg')
 })

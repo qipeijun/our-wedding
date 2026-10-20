@@ -1,0 +1,119 @@
+{
+  "briefVersion": "2.0",
+  "updatedAt": "2026-10-20",
+  "project": "our-wedding",
+  "couple": {
+    "groom": "戚培俊",
+    "bride": "涂丽纯",
+    "displayName": "戚培俊 · 涂丽纯"
+  },
+  "date": {
+    "iso": "2026-12-24",
+    "weekday": "星期四",
+    "full": "2026年12月24日（星期四）",
+    "lunarFull": "农历丙午年十一月十六",
+    "lunarShort": "农历十一月十六",
+    "timeZone": "Asia/Shanghai"
+  },
+  "schedule": [
+    {
+      "id": "arrival",
+      "time": "10:30",
+      "timeLabel": "上午10:30",
+      "title": "欢迎到场",
+      "location": null,
+      "nature": "suggested-arrival"
+    },
+    {
+      "id": "ceremony",
+      "time": "11:00",
+      "timeLabel": "上午11:00",
+      "title": "户外仪式",
+      "location": "附楼四合院",
+      "locationFull": "新饭店附楼四合院"
+    },
+    {
+      "id": "banquet",
+      "time": "12:00",
+      "timeLabel": "中午12:00",
+      "title": "婚宴开席",
+      "location": "主楼A栋三楼5号厅",
+      "locationFull": "新饭店主楼A栋三楼5号厅"
+    }
+  ],
+  "internal": {
+    "estimatedEndTime": "14:00",
+    "showEndTime": false
+  },
+  "venue": {
+    "name": "新饭店",
+    "areaLabel": "赣县",
+    "address": "江西省赣州市赣县区杨仙大道北侧",
+    "mapUrl": "https://surl.amap.com/2siOh8Ng46li",
+    "diagramFile": "src/assets/venue-map.svg",
+    "parkingInstructions": null,
+    "rainPlan": null
+  },
+  "publicUrl": "https://qipeijun.github.io/our-wedding/",
+  "deployment": {
+    "currentPublicPath": "/our-wedding/",
+    "preserveCurrentHosting": true,
+    "automaticPublishAuthorizedByThisBrief": false
+  },
+  "parents": {
+    "groom": {
+      "father": "戚本亮",
+      "mother": "尹李英",
+      "signature": "戚本亮 · 尹李英 敬邀"
+    },
+    "bride": {
+      "father": "涂如古",
+      "mother": "沈慧琪",
+      "signature": "涂如古 · 沈慧琪 敬邀"
+    }
+  },
+  "contact": {
+    "name": "戚培俊",
+    "phone": "18126072587",
+    "label": "联系新郎",
+    "href": "tel:18126072587",
+    "publicDisplayApproved": true
+  },
+  "audience": {
+    "sameDateAndVenueForAll": true,
+    "allInvitedToCeremonyAndBanquet": true
+  },
+  "features": {
+    "calendar": false,
+    "navigation": true,
+    "copyAddress": true,
+    "contactPhone": true,
+    "venueDiagram": true,
+    "rsvp": false,
+    "backgroundMusic": false,
+    "countdown": false,
+    "guestbook": false,
+    "payment": false,
+    "analytics": false
+  },
+  "qr": [
+    {
+      "id": "wedding",
+      "label": "婚礼详情",
+      "position": "left",
+      "url": "https://qipeijun.github.io/our-wedding/"
+    },
+    {
+      "id": "navigation",
+      "label": "到场导航",
+      "position": "right",
+      "url": "https://surl.amap.com/2siOh8Ng46li"
+    }
+  ],
+  "verification": {
+    "lunar": "Checked against Hong Kong Observatory 2026 calendar, page 1; 2026-10-20",
+    "weekday": "Python datetime.date(2026,12,24).weekday() == 3; Thursday",
+    "map": "Redirect metadata observed; final destination UI and WeChat behavior NOT tested",
+    "h5": "Public page title retrieved; complete rendered UI and real devices NOT tested"
+  }
+}

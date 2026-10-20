@@ -1,162 +1,169 @@
-import { chromium } from 'playwright'
-import { mkdir, readFile, writeFile } from 'node:fs/promises'
+import { chromium, type Page } from 'playwright'
+import { mkdir, writeFile } from 'node:fs/promises'
 import assert from 'node:assert/strict'
+import { wedding, copy } from './lib/content'
+import { renderedFonts } from './lib/browser'
 
-const url = process.env.PREVIEW_URL || 'http://127.0.0.1:4173/'
-await mkdir('artifacts/screenshots', { recursive: true })
+const url = process.env.PREVIEW_URL || `http://127.0.0.1:4173${wedding.deployment.currentPublicPath}`
+const masterOnly = process.argv.includes('--master')
+const directory = `artifacts/v3/${masterOnly ? 'master-check' : 'screenshots'}`
+await mkdir(directory, { recursive: true })
 const browser = await chromium.launch({ channel: 'chrome', headless: true })
-const reports = []
 const errors: string[] = []
+const reports: unknown[] = []
+async function ready(page: Page) {
+  await page.evaluate(async () => {
+    document.documentElement.style.scrollBehavior = 'auto'
+    document.querySelectorAll<HTMLImageElement>('img').forEach(image => image.loading = 'eager')
+    await document.fonts.ready
+    await Promise.all([...document.images].map(image => image.decode()))
+  })
+}
+async function captureSection(page: Page, selector: string, path: string) {
+  const section = page.locator(selector)
+  await section.scrollIntoViewIfNeeded()
+  await page.evaluate(async () => { await Promise.all(document.getAnimations().map(animation => animation.finished)) })
+  await section.screenshot({ path, animations: 'disabled' })
+}
 try {
   const page = await browser.newPage({ deviceScaleFactor: 1 })
-  page.on('pageerror', (error) => errors.push(error.message))
-  page.on('console', (message) => { if (message.type() === 'error') errors.push(message.text()) })
-  page.on('response', (response) => { if (response.status() >= 400) errors.push(`${response.status()} ${response.url()}`) })
-  for (const [width, height] of [[320, 568], [375, 667], [390, 844], [430, 932], [768, 1024], [1440, 1000], [844, 390]]) {
+  page.on('pageerror', error => errors.push(error.message))
+  page.on('console', message => { if (message.type() === 'error') errors.push(message.text()) })
+  page.on('response', response => { if (response.status() >= 400) errors.push(`${response.status()} ${response.url()}`) })
+  for (const [width, height] of [[320, 740], [360, 800], [390, 844], [430, 932], [1440, 1000]]) {
     await page.setViewportSize({ width: width!, height: height! })
     await page.goto(url)
-    await page.evaluate(() => document.fonts.ready)
-    // 逐段滚动触发浏览器的原生图片懒加载，再回到首屏截图。
-    await page.evaluate(async () => {
-      document.documentElement.style.scrollBehavior = 'auto'
-      for (let y = 0; y < document.body.scrollHeight; y += window.innerHeight) {
-        window.scrollTo(0, y)
-        await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)))
-      }
-      await Promise.all(Array.from(document.images, (image) => image.decode()))
-      window.scrollTo(0, 0)
+    await ready(page)
+    const layout = await page.evaluate(() => {
+      const main = document.querySelector('main')!.getBoundingClientRect()
+      const heading = document.querySelector('.hero-heading')!.getBoundingClientRect()
+      const photo = document.querySelector('.hero-photo')!.getBoundingClientRect()
+      return { width: innerWidth, scrollWidth: document.documentElement.scrollWidth, mainWidth: main.width, mainLeft: main.left, headingBottom: heading.bottom - photo.top, photoHeight: photo.height, images: [...document.querySelectorAll<HTMLImageElement>('.wedding-photo img')].map(image => ({ src: image.currentSrc, width: image.width, height: image.height, naturalWidth: image.naturalWidth, naturalHeight: image.naturalHeight })) }
     })
-    const layout = await page.evaluate(() => ({
-      viewport: innerWidth,
-      scrollWidth: document.documentElement.scrollWidth,
-      pageHeight: document.documentElement.scrollHeight,
-      images: Array.from(document.images, (image) => ({
-        alt: image.alt, src: image.currentSrc,
-        loaded: image.complete && image.naturalWidth > 0,
-        ratioDifference: Math.abs(image.getBoundingClientRect().width / image.getBoundingClientRect().height - image.naturalWidth / image.naturalHeight),
-        fit: getComputedStyle(image).objectFit,
-      })),
-    }))
-    assert.ok(layout.scrollWidth <= layout.viewport, `${width}px 横向溢出`)
-    assert.equal(layout.images.length, 8)
-    assert.ok(layout.images.every((image) => image.loaded && image.ratioDifference < 0.01 && image.fit === 'contain'))
-    const cover = await page.evaluate(() => {
-      const photo = document.querySelector('.cover-image')!.getBoundingClientRect()
-      const title = document.querySelector('.cover-title')!.getBoundingClientRect()
-      return { titleBottom: title.bottom, safeBottom: photo.top + photo.height * 0.29, viewportHeight: innerHeight }
-    })
-    assert.ok(cover.titleBottom < cover.safeBottom, `${width}px 封面文字超出原片上方留白`)
-    assert.ok(cover.titleBottom < cover.viewportHeight, `${width}px 首屏姓名与婚期不可见`)
-    await page.screenshot({ path: `artifacts/screenshots/${width}x${height}-full.png`, fullPage: true })
-    if (width === 390 || width === 320) await page.screenshot({ path: `artifacts/screenshots/${width}-cover.png` })
-    if (width === 390 || width === 320) await page.locator('.venue-map').screenshot({ path: `artifacts/screenshots/${width}-venue-map.png` })
-    reports.push({ width, height, ...layout })
+    assert.ok(layout.scrollWidth <= layout.width, `横向溢出：${width}`)
+    assert.ok(layout.mainWidth <= 560)
+    if (width === 1440) assert.equal(layout.mainLeft, 440)
+    // 实际原图中最高头发约从照片30%处开始；对照原图后的边界而非通用模板。
+    assert.ok(layout.headingBottom < layout.photoHeight * .295, `封面文字越过已复核安全区：${width}`)
+    for (const image of layout.images) assert.ok(Math.abs(image.width / image.height - image.naturalWidth / image.naturalHeight) < .01)
+    assert.equal(await page.locator('.wedding-photo').count(), masterOnly ? 1 : 6)
+    assert.equal(await page.getByText('设置提醒', { exact: true }).count(), 0)
+    assert.equal(await page.locator('a[href*=".ics"],a[href^="webcal:"],a[href*="calendar.google"]').count(), 0)
+    const schedule = await page.locator('#schedule').innerText()
+    for (const item of wedding.schedule) { assert.ok(schedule.includes(item.time)); if (item.location) assert.ok(schedule.includes(item.location)) }
+    // 等待实际入场动画完成再截图，不把过渡中的透明度当作最终画面。
+    await page.evaluate(async () => { await Promise.all(document.getAnimations().map(animation => animation.finished)) })
+    await page.screenshot({ path: `${directory}/h5-${width}.png`, fullPage: true, animations: 'disabled' })
+    await captureSection(page, '.cover', `${directory}/cover-${width}.png`)
+    await captureSection(page, '#schedule', `${directory}/schedule-${width}.png`)
+    if (!masterOnly) await captureSection(page, '#venue', `${directory}/venue-${width}.png`)
+    reports.push(layout)
   }
-  await page.setViewportSize({ width: 390, height: 844 })
-  await page.goto(url)
-  assert.equal(await page.locator('.cover-groom').innerText(), '戚培俊')
-  assert.equal(await page.locator('.cover-bride').innerText(), '涂丽纯')
-  assert.equal(await page.locator('.cover-text-title').innerText(), '我们结婚啦')
-  assert.equal(await page.locator('.cover-date time').innerText(), '2026年12月24日星期四')
-  assert.match(await page.locator('.cover-footer').innerText(), /赣州新饭店\s+11:00 仪式\s+新饭店附楼\s+12:00 午宴\s+新饭店主楼/)
-  assert.equal(await page.locator('.cover-footer').getByRole('button', { name: '设置提醒' }).count(), 0)
-  const dialogTitles = await page.locator('dialog').evaluateAll((dialogs) => dialogs.map((dialog) => dialog.getAttribute('aria-labelledby')))
-  assert.equal(new Set(dialogTitles).size, dialogTitles.length, '多处导航弹层须使用独立标题 ID')
-  assert.match(await page.locator('.event-times').innerText(), /婚礼仪式\s+11:00\s+新饭店附楼\s+午宴开席\s+12:00\s+新饭店主楼/)
-  await page.locator('#details').screenshot({ path: 'artifacts/screenshots/wedding-details.png' })
-  assert.equal(await page.locator('.venue-address').innerText(), '江西省赣州市赣县区梅林镇杨仙大道21号')
-  const calendarButton = page.getByRole('button', { name: '设置提醒' })
-  await calendarButton.click()
-  await page.getByRole('dialog').waitFor({ state: 'visible' })
-  assert.doesNotMatch(await page.getByRole('dialog').innerText(), /尚待确认|暂时无法生成/)
-  const downloaded = page.waitForEvent('download')
-  await page.getByRole('link', { name: '下载日历', exact: true }).click()
-  const download = await downloaded
-  const calendarContent = await readFile((await download.path())!, 'utf8')
-  assert.match(calendarContent, /DTSTART:20261224T030000Z/)
-  assert.doesNotMatch(calendarContent, /DTEND:/)
-  assert.match(calendarContent, /TRIGGER:-P1D/)
-  assert.match(calendarContent, /TRIGGER:-PT2H/)
-  assert.match(await page.getByRole('status').innerText(), /不会自动设置提醒/)
-  await page.screenshot({ path: 'artifacts/screenshots/calendar-reminder.png' })
-  await page.keyboard.press('Escape')
-  assert.equal(await calendarButton.evaluate((button) => document.activeElement === button), true)
-  await page.emulateMedia({ reducedMotion: 'reduce' })
-  assert.equal(await page.evaluate(() => getComputedStyle(document.documentElement).scrollBehavior), 'auto')
-  // 截获出站请求验证按钮直达新人提供的短链；不作为高德实机或现场路线验收。
-  await page.route('https://surl.amap.com/2siOh8Ng46li', (route) => route.fulfill({ status: 200, contentType: 'text/html', body: '<p>测试已截获高德分享链接请求</p>' }))
-  const mapUrl = new URL('https://surl.amap.com/2siOh8Ng46li')
-  for (const section of ['.cover-footer', '#details']) {
+  const actualFonts = { title: await renderedFonts(page, '.couple-names span'), body: await renderedFonts(page, '.invitation-copy p') }
+  assert.ok(actualFonts.title.some(font => font.isCustomFont && /Wedding/.test(font.familyName)))
+  if (!masterOnly) {
+    await page.setViewportSize({ width: 390, height: 844 })
     await page.goto(url)
-    const mapRequest = page.waitForRequest((request) => request.url() === mapUrl.href)
-    await page.locator(section).getByRole('button', { name: '导航前往' }).click()
-    assert.equal((await mapRequest).url(), mapUrl.href)
-  }
-
-  // 微信 UA 只验证提示分支，不冒充真机微信兼容性验证。
-  const wechat = await browser.newContext({ viewport: { width: 375, height: 667 },
-    userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 MicroMessenger/8.0.50' })
-  // 使用原始脚本，避免 tsx 给函数附加的 __name 辅助方法进入浏览器隔离上下文。
-  await wechat.addInitScript("Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText() { return Promise.reject(new Error('模拟权限拒绝')) } } })")
-  const wxPage = await wechat.newPage()
-  wxPage.on('pageerror', (error) => errors.push(error.message))
-  await wxPage.goto(url)
-  await wxPage.getByRole('button', { name: '设置提醒' }).click()
-  assert.match(await wxPage.getByRole('dialog').innerText(), /Safari/)
-  assert.equal(await wxPage.getByRole('link', { name: '下载日历', exact: true }).count(), 0)
-  await wxPage.getByRole('button', { name: '复制婚礼信息' }).click()
-  await wxPage.getByRole('textbox').waitFor({ state: 'visible' })
-  assert.match(await wxPage.getByRole('status').innerText(), /请长按下方文字复制/)
-  assert.match(await wxPage.getByRole('textbox').inputValue(), /赣州新饭店/)
-  assert.match(await wxPage.getByRole('textbox').inputValue(), /仪式 11:00（中国标准时间） · 新饭店附楼\n午宴 12:00 · 新饭店主楼/)
-  await wxPage.screenshot({ path: 'artifacts/screenshots/wechat-copy-fallback.png' })
-  await wxPage.getByRole('button', { name: '关闭', exact: true }).click()
-  const coverNavigation = wxPage.locator('.cover-footer').getByRole('button', { name: '导航前往' })
-  await coverNavigation.click()
-  assert.match(await wxPage.getByRole('dialog').innerText(), /微信内置定位尚未开通/)
-  await wxPage.getByRole('button', { name: '关闭', exact: true }).click()
-  assert.equal(await coverNavigation.evaluate((button) => document.activeElement === button), true)
-  await wxPage.locator('#details').getByRole('button', { name: '导航前往' }).click()
-  assert.match(await wxPage.getByRole('dialog').innerText(), /微信内置定位尚未开通/)
-  assert.equal(await wxPage.getByRole('dialog').getByRole('link').count(), 0)
-  await wxPage.getByRole('button', { name: '复制婚礼地址' }).click()
-  assert.equal(await wxPage.getByRole('textbox').inputValue(), '赣州新饭店\n江西省赣州市赣县区梅林镇杨仙大道21号')
-  await wxPage.screenshot({ path: 'artifacts/screenshots/wechat-navigation-pending.png' })
-  await wechat.close()
-  // 用本地构建响应模拟 HTTPS 子目录，只验证平台分支和 URL，不冒充真机导入/订阅成功。
-  const platformReports = []
-  for (const [name, userAgent] of [
-    ['ios', 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 Version/17.0 Mobile/15E148 Safari/604.1'],
-    ['android', 'Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 Chrome/130.0.0.0 Mobile Safari/537.36'],
-    ['wechat-android', 'Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 MicroMessenger/8.0.50'],
-  ]) {
-    const context = await browser.newContext({ viewport: { width: 375, height: 667 }, userAgent })
-    await context.route('https://wedding.test/invitation/**', async (route) => {
-      const localPath = new URL(route.request().url()).pathname.replace('/invitation/', '')
-      await route.fulfill({ response: await context.request.get(new URL(localPath, url).href) })
-    })
-    const mobile = await context.newPage()
-    mobile.on('pageerror', (error) => errors.push(error.message))
-    await mobile.goto('https://wedding.test/invitation/')
-    await mobile.getByRole('button', { name: '设置提醒' }).click()
-    if (name === 'ios') {
-      assert.equal(await mobile.getByRole('link', { name: '订阅日历' }).getAttribute('href'), 'webcal://wedding.test/invitation/wedding.ics')
-      assert.equal(await mobile.locator('details').first().getAttribute('open'), '')
-    } else if (name === 'android') {
-      assert.equal(await mobile.getByRole('link', { name: '订阅日历' }).count(), 0)
-      assert.equal(await mobile.locator('details').last().getAttribute('open'), '')
-    } else {
-      assert.match(await mobile.getByRole('dialog').innerText(), /浏览器中打开/)
-    }
-    if (name !== 'wechat-android') {
-      assert.equal(await mobile.getByRole('link', { name: '下载日历', exact: true }).getAttribute('href'), 'https://wedding.test/invitation/wedding.ics')
-    }
-    await mobile.screenshot({ path: `artifacts/screenshots/${name}-reminder.png` })
-    platformReports.push({ name, scope: '模拟 UA 与 HTTPS 子目录，仅验证网页流程' })
-    await context.close()
+    await ready(page)
+    assert.equal(await page.locator('.sticky-navigation').isVisible(), false)
+    await page.getByRole('link', { name: copy.ui.jumpToDetails }).click()
+    await page.waitForFunction(() => document.querySelector('.sticky-navigation')?.getAttribute('aria-hidden') !== 'true')
+    assert.equal(await page.locator('.sticky-navigation').isVisible(), true)
+    await page.locator('[data-main-navigation]').scrollIntoViewIfNeeded()
+    await page.waitForFunction(() => document.querySelector('.sticky-navigation')?.getAttribute('aria-hidden') === 'true')
+    assert.equal(await page.locator('.sticky-navigation').isVisible(), false, '正文导航可见时收起重复固定栏')
+    for (const href of await page.getByRole('link', { name: new RegExp(copy.ui.navigation) }).evaluateAll(links => links.map(link => link.getAttribute('href')))) assert.equal(href, wedding.venue.mapUrl)
+    assert.equal(await page.getByRole('link', { name: copy.ui.contact, exact: true }).getAttribute('href'), wedding.contact.href)
+    await page.locator('.venue-diagram').scrollIntoViewIfNeeded()
+    assert.equal(await page.locator('.venue-diagram img').isVisible(), true, '地图在正文直接展开')
+    assert.equal(await page.locator('.venue-diagram button').count(), 0, '查看地图不需要额外点击')
+    await page.screenshot({ path: `${directory}/map-inline.png` })
+    // 模拟异步剪贴板：验证 promise 完成前不能显示成功。
+    await page.evaluate(`Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText: (text) => new Promise(resolve => { Object.assign(window, { copiedAddress: text, finishCopy: resolve }) }) } })`)
+    await page.getByRole('button', { name: copy.ui.copyAddress, exact: true }).click()
+    assert.equal(await page.getByText(copy.ui.copySuccess, { exact: true }).count(), 0)
+    await page.evaluate(() => (window as unknown as { finishCopy: () => void }).finishCopy())
+    await page.getByText(copy.ui.copySuccess, { exact: true }).waitFor()
+    assert.equal(await page.evaluate(() => (window as unknown as { copiedAddress: string }).copiedAddress), copy.copyAddressText)
+    await page.evaluate(`Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText: async () => { throw new DOMException('Denied', 'NotAllowedError') } } })`)
+    await page.getByRole('button', { name: copy.ui.copyAddress, exact: true }).click()
+    await page.getByText(copy.ui.copyFallback, { exact: true }).waitFor()
+    assert.equal(await page.locator('dialog[open] textarea').inputValue(), copy.copyAddressText)
+    assert.equal(await page.getByText(copy.ui.copySuccess, { exact: true }).count(), 0)
+    await page.screenshot({ path: `${directory}/copy-denied.png` })
+    await page.locator('dialog[open]').getByRole('button', { name: /关闭/ }).click()
+    await page.waitForFunction(() => document.activeElement?.textContent?.trim() === '复制地址')
+    await page.evaluate(() => Object.defineProperty(navigator, 'clipboard', { configurable: true, value: undefined }))
+    await page.getByRole('button', { name: copy.ui.copyAddress, exact: true }).click()
+    await page.locator('dialog[open] textarea').waitFor()
+    await page.keyboard.press('Escape')
+    await page.emulateMedia({ reducedMotion: 'reduce' })
+    assert.equal(await page.evaluate(() => getComputedStyle(document.documentElement).scrollBehavior), 'auto')
+    await page.locator('.closing-copy').scrollIntoViewIfNeeded()
+    await page.waitForFunction(() => document.querySelector('.sticky-navigation')?.getAttribute('aria-hidden') === 'false')
+    const footer = await page.locator('.closing-copy').boundingBox()
+    const bar = await page.locator('.sticky-navigation').boundingBox()
+    assert.ok(footer && bar && footer.y + footer.height <= bar.y, '底栏遮挡结尾')
+    await page.screenshot({ path: `${directory}/closing-and-navigation.png` })
+    // 拦截外链只证明点击请求目标，不替代高德或真机路线验收。
+    const routePage = await browser.newPage({ viewport: { width: 390, height: 844 }, userAgent: 'Mozilla/5.0 iPhone MicroMessenger/8.0' })
+    let clickedUrl = ''
+    await routePage.route(wedding.venue.mapUrl, async route => { clickedUrl = route.request().url(); await route.fulfill({ contentType: 'text/html', body: '<p>导航目标测试</p>' }) })
+    await routePage.goto(url)
+    await routePage.locator('#schedule').getByRole('link', { name: copy.ui.navigation, exact: true }).click()
+    await routePage.waitForURL(wedding.venue.mapUrl)
+    assert.equal(clickedUrl, wedding.venue.mapUrl)
+    await routePage.close()
+    // 无 JS 或模块初始化失败时，构建写入的核心信息仍在原 HTML 中。
+    const nojs = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 390, height: 844 } })
+    const fallback = await nojs.newPage()
+    await fallback.goto(url)
+    assert.ok((await fallback.locator('body').innerText()).includes(wedding.contact.phone))
+    await fallback.screenshot({ path: `${directory}/no-javascript.png`, fullPage: true })
+    await nojs.close()
+    // 仅阻断封面图片：日期和姓名仍可见，手动重试后恢复照片。
+    const failure = await browser.newPage({ viewport: { width: 320, height: 740 } })
+    await failure.route('**/photos/9.1032978-*', route => route.abort())
+    await failure.goto(url)
+    await failure.getByText(copy.ui.photoError).waitFor()
+    assert.equal(await failure.locator('.couple-names').isVisible(), true)
+    assert.equal(await failure.locator('.date-main').isVisible(), true)
+    await failure.screenshot({ path: `${directory}/photo-failed.png`, fullPage: false })
+    await failure.unroute('**/photos/9.1032978-*')
+    await failure.getByRole('button', { name: copy.ui.retry }).click()
+    await failure.locator('.hero-photo .wedding-photo img').waitFor()
+    await failure.locator('.hero-photo .wedding-photo img').evaluate(image => (image as HTMLImageElement).decode())
+    await failure.close()
+    const titleFailure = await browser.newPage({ viewport: { width: 320, height: 740 } })
+    await titleFailure.route('**/artwork/wedding-title.webp', route => route.abort())
+    await titleFailure.goto(url)
+    await titleFailure.locator('.hero-heading h1 span:not(.sr-only)').waitFor()
+    assert.equal(await titleFailure.getByRole('heading', { level: 1 }).innerText(), copy.h5.title)
+    await titleFailure.close()
+    // 主动延迟标题响应：照片和姓名先可读，标题入场必须等素材就绪。
+    const delayedTitle = await browser.newPage({ viewport: { width: 390, height: 844 } })
+    let releaseTitle!: () => void
+    const titleGate = new Promise<void>(resolve => { releaseTitle = resolve })
+    await delayedTitle.route('**/artwork/wedding-title.webp', async route => { await titleGate; await route.continue() })
+    await delayedTitle.goto(url, { waitUntil: 'domcontentloaded' })
+    await delayedTitle.locator('.couple-names').waitFor()
+    assert.equal(await delayedTitle.locator('.hero-heading').evaluate(element => getComputedStyle(element).animationName), 'none')
+    releaseTitle()
+    await delayedTitle.locator('.hero-heading.is-ready').waitFor()
+    assert.equal(await delayedTitle.locator('.hero-heading').evaluate(element => getComputedStyle(element).animationName), 'title-arrive')
+    await delayedTitle.close()
+    // 高密度手机必须命中足够分辨率的照片，不能只在1倍截图中看起来清晰。
+    const dense = await browser.newContext({ viewport: { width: 430, height: 932 }, deviceScaleFactor: 3, isMobile: true, hasTouch: true, reducedMotion: 'reduce' })
+    const densePage = await dense.newPage()
+    await densePage.goto(url)
+    await ready(densePage)
+    const coverSource = await densePage.locator('.hero-photo .wedding-photo img').evaluate(image => (image as HTMLImageElement).currentSrc)
+    assert.match(coverSource, /-1600\.webp$/, '430px三倍屏应读取1600px照片')
+    await densePage.screenshot({ path: `${directory}/mobile-430-3x.png` })
+    reports.push({ width: 430, deviceScaleFactor: 3, coverSource })
+    await dense.close()
   }
   assert.deepEqual(errors, [])
-  await writeFile('artifacts/browser-report.json', JSON.stringify({ checkedAt: new Date().toISOString(), url, reports,
-    errors, platformReports, mapRequest: mapUrl.href, interactions: ['实际下载日历文件与提醒内容', '高德确认地点分享链接（截获验证）', 'Escape 关闭及焦点返回', '减少动态效果', '微信浏览器引导（模拟 UA）', '复制被拒绝后的完整日程手动复制', '微信原生定位未就绪提示及完整地址复制'] }, null, 2))
-  console.log(`浏览器检查通过：${reports.length} 个尺寸、8 张照片原比例加载、7 项交互检查、婚礼信息展示正确、无控制台或网络错误。`)
+  await writeFile(`${directory}/report.json`, JSON.stringify({ passed: true, renderer: browser.version(), actualFonts, masterOnly, reports, errors, wechat: '仅UA分支模拟，真机待测' }, null, 2) + '\n')
+  console.log(`${masterOnly ? '视觉母版' : '完整H5'}多宽度与交互检查通过；真机微信待测。`)
 } finally { await browser.close() }

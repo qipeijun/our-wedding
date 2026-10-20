@@ -11,5 +11,5 @@ artifacts/
 /docs/assets/thumbnails/
 /docs/assets/contact-sheet-*.jpg
 
-# 开发或构建时生成，不跟踪每次变化的 DTSTAMP。
-/public/wedding.ics
+# 交接包为本地设计依据，不打包发布。
+/design-handoff/

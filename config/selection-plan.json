@@ -1,0 +1,121 @@
+{
+  "status": "Design proposal fixed for first execution; not final crop validation",
+  "firstH5Count": 6,
+  "selected": [
+    {
+      "id": "cover",
+      "file": "9.1032978.jpg",
+      "role": "H5封面、朋友请帖",
+      "fit": "intrinsic-ratio",
+      "overlay": "仅上方红底；文字安全区须目标尺寸复核",
+      "mustKeep": [
+        "双人",
+        "双手",
+        "花束",
+        "裙摆",
+        "左侧光影"
+      ],
+      "status": "当前上传副本已查看；项目高分辨率原图待确认"
+    },
+    {
+      "id": "rings",
+      "file": "9.1032932.jpg",
+      "role": "H5喜讯近景",
+      "fit": "full-width-horizontal",
+      "overlay": "none",
+      "mustKeep": [
+        "双方面部",
+        "两枚戒指",
+        "双手"
+      ],
+      "status": "依素材档案建议；待打开原图"
+    },
+    {
+      "id": "response-groom",
+      "file": "9.1032999.jpg",
+      "role": "H5递花双图上幅",
+      "fit": "full-width-horizontal",
+      "overlay": "none",
+      "mustKeep": [
+        "新郎",
+        "进入画面的手与花束",
+        "原始左右方向"
+      ],
+      "status": "依素材档案建议；待打开原图"
+    },
+    {
+      "id": "response-bride",
+      "file": "9.1032993.jpg",
+      "role": "H5递花双图下幅",
+      "fit": "full-width-horizontal",
+      "overlay": "none",
+      "mustKeep": [
+        "新娘",
+        "双手",
+        "戒指",
+        "进入画面的手臂与花束"
+      ],
+      "status": "依素材档案建议；待打开原图"
+    },
+    {
+      "id": "quiet",
+      "file": "9.1032698.jpg",
+      "role": "H5温柔停顿",
+      "fit": "full-width-horizontal",
+      "overlay": "none",
+      "mustKeep": [
+        "吻手动作",
+        "双方神态",
+        "头纱"
+      ],
+      "status": "依素材档案建议；待打开原图"
+    },
+    {
+      "id": "closing",
+      "file": "9.1033008.jpg",
+      "role": "H5结尾",
+      "fit": "intrinsic-ratio",
+      "overlay": "none; closing text outside photo",
+      "mustKeep": [
+        "双方神态",
+        "靠近关系",
+        "花束"
+      ],
+      "status": "依素材档案建议；待打开原图"
+    },
+    {
+      "id": "formal-main",
+      "file": "9.1032428.jpg",
+      "role": "长辈、男方父母、女方父母三版主图",
+      "fit": "intrinsic-ratio",
+      "overlay": "待原图验证上方红底；空间不足移文字到照片外",
+      "mustKeep": [
+        "牵手",
+        "团扇",
+        "服装",
+        "双方面部"
+      ],
+      "status": "依素材档案建议；待打开原图"
+    },
+    {
+      "id": "formal-fallback",
+      "file": "9.1032955.jpg",
+      "role": "正式三版统一备用主图，不与主图同时铺陈",
+      "fit": "intrinsic-ratio",
+      "overlay": "上方红底需复核",
+      "mustKeep": [
+        "双方面部",
+        "花束",
+        "完整裙摆"
+      ],
+      "status": "依素材档案建议；待打开原图"
+    }
+  ],
+  "pending": [
+    "Full set of 47 project originals",
+    "Venue diagram",
+    "Existing repository source and publishing workflow",
+    "Real WeChat tests"
+  ],
+  "replacementRule": "Only replace for missing asset, quality or layout issue and record reason; do not randomly reopen art direction"
+}
