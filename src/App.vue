@@ -18,7 +18,7 @@
             <p class="date-main"><time :datetime="wedding.date.iso">{{ wedding.dateMain }}</time></p>
             <p class="date-secondary">{{ wedding.date.weekday }}<span aria-hidden="true"> · </span>{{ wedding.venue.areaLabel }}{{ wedding.venue.name }}</p>
           </div>
-          <a class="jump-link" href="#schedule"><span>{{ copy.ui.jumpToDetails }}</span><span class="arrow-circle" aria-hidden="true">↓</span></a>
+          <a class="jump-link" href="#schedule"><span>{{ copy.ui.jumpToDetails }}</span><span class="jump-arrow" aria-hidden="true">↓</span></a>
         </div>
       </div>
     </section>
@@ -27,7 +27,6 @@
       <div class="welcome-heading section-pad reveal">
         <p class="small-label">{{ copy.h5.welcomeLabel }}</p>
         <h2 id="welcome-title"><span v-for="line in copy.h5.welcomeTitle" :key="line">{{ line }}</span></h2>
-        <svg class="ring-mark" viewBox="0 0 90 70" fill="none" aria-hidden="true"><ellipse cx="34" cy="37" rx="22" ry="27" transform="rotate(-24 34 37)" /><ellipse cx="57" cy="37" rx="22" ry="27" transform="rotate(24 57 37)" /></svg>
       </div>
       <figure class="rings-photo reveal"><WeddingPhoto :photo="photoById('rings')" /></figure>
       <div class="invitation-copy section-pad reveal"><p v-for="paragraph in copy.h5.invitationParagraphs" :key="paragraph">{{ paragraph }}</p></div>
@@ -56,7 +55,7 @@
       <div class="closing-copy section-pad"><h2>{{ copy.h5.closing }}</h2><p class="closing-names">{{ copy.h5.closingNames }}</p><a class="back-top" href="#top">{{ copy.ui.backToTop }} <span aria-hidden="true">↑</span></a></div>
     </footer>
 
-    <nav v-show="showNavigation" class="sticky-navigation" :aria-hidden="!showNavigation" aria-label="快捷到场导航">
+    <nav ref="stickyNavigation" class="sticky-navigation" :class="{ 'is-visible': showNavigation }" :aria-hidden="!showNavigation" :inert="!showNavigation" aria-label="快捷到场导航">
       <a class="sticky-details" href="#schedule"><span>{{ shortDate }} · {{ wedding.venue.name }}</span><small>{{ copy.ui.scheduleHeading }} ↑</small></a>
       <a class="button-primary" :href="wedding.venue.mapUrl">{{ copy.ui.navigation }} <span aria-hidden="true">↗</span></a>
     </nav>
@@ -81,7 +80,10 @@ function pauseMusicForDeparture(event: MouseEvent) {
   if (href === wedding.venue.mapUrl || href === wedding.contact.href) backgroundMusic.value?.pause()
 }
 const coverSection = ref<HTMLElement>()
+const stickyNavigation = ref<HTMLElement>()
+// 封面已离开视口时才提供底部快捷入口。
 const pastCover = ref(false)
+// 正文导航完整进入底栏上方的可操作区域时，隐藏重复入口。
 const mainNavigationVisible = ref(false)
 // 标题素材加载失败时显示同一文案的可读字形，仍能识别邀请主题。
 const titleArtworkFailed = ref(false)
@@ -93,6 +95,7 @@ const shortDate = new Intl.DateTimeFormat('zh-CN', { month: 'long', day: 'numeri
 let coverObserver: IntersectionObserver | undefined
 let revealObserver: IntersectionObserver | undefined
 let navigationObserver: IntersectionObserver | undefined
+let navigationResizeObserver: ResizeObserver | undefined
 
 onMounted(() => {
   // 观察器只增强导航与入场表现，正文默认可见，不依赖动画完成才能阅读。
@@ -102,12 +105,18 @@ onMounted(() => {
   })
   coverObserver.observe(coverSection.value)
   const mainNavigation = invitation.value?.querySelector('[data-main-navigation]')
-  if (mainNavigation) {
-    // 正文导航进入可操作区域后收起固定栏，避免重复入口遮住联系人。
-    navigationObserver = new IntersectionObserver(([entry]) => {
-      mainNavigationVisible.value = !!entry && entry.isIntersecting
-    }, { rootMargin: '0px 0px -84px 0px', threshold: 0 })
-    navigationObserver.observe(mainNavigation)
+  if (mainNavigation && stickyNavigation.value) {
+    // 隐藏时保留底栏布局以持续测量换行和安全区，避免显隐导致高度归零、反复跳动。
+    navigationResizeObserver = new ResizeObserver(() => {
+      const height = Math.ceil(stickyNavigation.value!.getBoundingClientRect().height)
+      document.documentElement.style.setProperty('--navigation-height', `${height}px`)
+      navigationObserver?.disconnect()
+      navigationObserver = new IntersectionObserver(([entry]) => {
+        mainNavigationVisible.value = !!entry && entry.isIntersecting && entry.intersectionRatio >= .99
+      }, { rootMargin: `0px 0px -${height + 24}px 0px`, threshold: [0, 1] })
+      navigationObserver.observe(mainNavigation)
+    })
+    navigationResizeObserver.observe(stickyNavigation.value)
   }
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
   revealObserver = new IntersectionObserver(entries => {
@@ -123,5 +132,7 @@ onBeforeUnmount(() => {
   coverObserver?.disconnect()
   revealObserver?.disconnect()
   navigationObserver?.disconnect()
+  navigationResizeObserver?.disconnect()
+  document.documentElement.style.removeProperty('--navigation-height')
 })
 </script>

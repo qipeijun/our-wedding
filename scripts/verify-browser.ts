@@ -6,7 +6,7 @@ import { renderedFonts } from './lib/browser'
 
 const url = process.env.PREVIEW_URL || `http://127.0.0.1:4173${wedding.deployment.currentPublicPath}`
 const masterOnly = process.argv.includes('--master')
-const directory = `artifacts/v3/${masterOnly ? 'master-check' : 'screenshots'}`
+const directory = `artifacts/v3/${masterOnly ? 'master-check' : 'polish-screenshots'}`
 await mkdir(directory, { recursive: true })
 const browser = await chromium.launch({ channel: 'chrome', headless: true })
 const errors: string[] = []
@@ -23,17 +23,42 @@ async function captureSection(page: Page, selector: string, path: string) {
   const section = page.locator(selector)
   await section.scrollIntoViewIfNeeded()
   await page.evaluate(async () => { await Promise.all(document.getAnimations().map(animation => animation.finished)) })
-  await section.screenshot({ path, animations: 'disabled' })
+  const bounds = await section.boundingBox()
+  assert.ok(bounds)
+  const scrollY = await page.evaluate(() => window.scrollY)
+  // 长区块截图移除悬浮控件，避免把某一滚动位置的底栏印在区块中间；视口截图另验真实遮挡。
+  // 使用文档坐标，避免 scroll-padding 使高区块居中后，截图漏掉视口上方的标题。
+  await page.screenshot({ path, fullPage: true, clip: { ...bounds, y: bounds.y + scrollY }, animations: 'disabled', style: selector === '.cover' ? '' : '.sticky-navigation,.background-music { visibility: hidden !important; }' })
+}
+/** 检查文字的实际行框，避免 overflow: clip 掩盖内容超出屏幕的问题。 */
+async function checkReadingLayout(page: Page) {
+  const overflow = await page.evaluate(() => {
+    const walker = document.createTreeWalker(document.querySelector('main')!, NodeFilter.SHOW_TEXT)
+    const failures: string[] = []
+    while (walker.nextNode()) {
+      const node = walker.currentNode
+      if (!node.textContent?.trim() || node.parentElement?.closest('.sr-only,[aria-hidden="true"]')) continue
+      const range = document.createRange()
+      range.selectNodeContents(node)
+      if ([...range.getClientRects()].some(rect => rect.left < -1 || rect.right > innerWidth + 1)) failures.push(node.textContent.trim())
+    }
+    return failures
+  })
+  assert.deepEqual(overflow, [], '正文行框不能超出视口')
 }
 try {
   const page = await browser.newPage({ deviceScaleFactor: 1 })
   page.on('pageerror', error => errors.push(error.message))
   page.on('console', message => { if (message.type() === 'error') errors.push(message.text()) })
   page.on('response', response => { if (response.status() >= 400) errors.push(`${response.status()} ${response.url()}`) })
-  for (const [width, height] of [[320, 740], [360, 800], [390, 844], [430, 932], [1440, 1000]]) {
+  for (const [width, height] of [[320, 740], [360, 800], [375, 812], [390, 844], [430, 932], [1440, 1000]]) {
     await page.setViewportSize({ width: width!, height: height! })
     await page.goto(url)
     await ready(page)
+    await checkReadingLayout(page)
+    assert.doesNotMatch(await page.locator('meta[name="viewport"]').getAttribute('content') ?? '', /user-scalable\s*=\s*no|maximum-scale|minimum-scale/)
+    assert.equal(await page.locator('html').evaluate(element => getComputedStyle(element).touchAction), 'auto')
+    for (const size of await page.locator('.date-main,.date-secondary,.schedule-location,.venue-address p,.contact-number,.sticky-details span').evaluateAll(elements => elements.map(element => parseFloat(getComputedStyle(element).fontSize)))) assert.ok(size >= 15.9, '关键信息至少16px')
     const layout = await page.evaluate(() => {
       const main = document.querySelector('main')!.getBoundingClientRect()
       const heading = document.querySelector('.hero-heading')!.getBoundingClientRect()
@@ -52,12 +77,28 @@ try {
     assert.equal(await page.locator('a[href*=".ics"],a[href^="webcal:"],a[href*="calendar.google"]').count(), 0)
     const schedule = await page.locator('#schedule').innerText()
     for (const item of wedding.schedule) { assert.ok(schedule.includes(item.time)); if (item.location) assert.ok(schedule.includes(item.location)) }
+    assert.doesNotMatch(schedule, /请先到|午宴移步/)
+    assert.equal(await page.getByText('如何到酒店', { exact: true }).count(), 0)
+    assert.equal(await page.locator('.venue-diagram figcaption').count(), 0)
     // 等待实际入场动画完成再截图，不把过渡中的透明度当作最终画面。
     await page.evaluate(async () => { await Promise.all(document.getAnimations().map(animation => animation.finished)) })
+    await page.emulateMedia({ reducedMotion: 'reduce' })
     await page.screenshot({ path: `${directory}/h5-${width}.png`, fullPage: true, animations: 'disabled' })
     await captureSection(page, '.cover', `${directory}/cover-${width}.png`)
     await captureSection(page, '#schedule', `${directory}/schedule-${width}.png`)
     if (!masterOnly) await captureSection(page, '#venue', `${directory}/venue-${width}.png`)
+    if (!masterOnly) {
+      await captureSection(page, '.response-section', `${directory}/photos-${width}.png`)
+      await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight))
+      await page.locator('.sticky-navigation').waitFor({ state: 'visible' })
+      const footer = await page.locator('.closing-copy').boundingBox()
+      const bar = await page.locator('.sticky-navigation').boundingBox()
+      assert.ok(footer && bar && footer.y + footer.height <= bar.y, `底栏遮挡结尾：${width}`)
+      await page.screenshot({ path: `${directory}/bottom-${width}.png` })
+      await page.locator('.sticky-details').click()
+      await page.waitForFunction(() => Math.abs(document.querySelector('#schedule')!.getBoundingClientRect().top - 72) <= 1)
+      await page.screenshot({ path: `${directory}/schedule-viewport-${width}.png` })
+    }
     reports.push(layout)
   }
   const actualFonts = { title: await renderedFonts(page, '.couple-names span'), body: await renderedFonts(page, '.invitation-copy p') }
@@ -70,6 +111,9 @@ try {
     await page.getByRole('link', { name: copy.ui.jumpToDetails }).click()
     await page.waitForFunction(() => document.querySelector('.sticky-navigation')?.getAttribute('aria-hidden') !== 'true')
     assert.equal(await page.locator('.sticky-navigation').isVisible(), true)
+    const musicBox = await page.locator('.music-toggle').boundingBox()
+    const scheduleBox = await page.locator('#schedule-title').boundingBox()
+    assert.ok(musicBox && scheduleBox && scheduleBox.y >= musicBox.y + musicBox.height, '日程跳转后应避开音乐按钮')
     await page.locator('[data-main-navigation]').scrollIntoViewIfNeeded()
     await page.waitForFunction(() => document.querySelector('.sticky-navigation')?.getAttribute('aria-hidden') === 'true')
     assert.equal(await page.locator('.sticky-navigation').isVisible(), false, '正文导航可见时收起重复固定栏')
@@ -107,6 +151,49 @@ try {
     const bar = await page.locator('.sticky-navigation').boundingBox()
     assert.ok(footer && bar && footer.y + footer.height <= bar.y, '底栏遮挡结尾')
     await page.screenshot({ path: `${directory}/closing-and-navigation.png` })
+    await page.getByRole('link', { name: copy.ui.backToTop }).click()
+    await page.waitForFunction(() => scrollY === 0)
+    await page.locator('.sticky-navigation').waitFor({ state: 'hidden' })
+    assert.equal(await page.locator('.sticky-navigation').isVisible(), false)
+
+    // 将根字号加倍，模拟仅放大文字；不以整页缩放代替文字重排验收。
+    for (const width of [320, 390, 430]) {
+      await page.setViewportSize({ width, height: 844 })
+      await page.evaluate(() => { document.documentElement.style.fontSize = '34px' })
+      await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight))
+      await page.waitForFunction(() => {
+        const height = document.querySelector('.sticky-navigation')!.getBoundingClientRect().height
+        return Math.abs(parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--navigation-height')) - height) <= 1
+      })
+      // 尺寸观察器更新留白后再滚到新的页面末尾，不能沿用放大前的文档高度。
+      await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight))
+      await checkReadingLayout(page)
+      const zoomFooter = await page.locator('.closing-copy').boundingBox()
+      const zoomBar = await page.locator('.sticky-navigation').boundingBox()
+      assert.ok(zoomFooter && zoomBar && zoomFooter.y + zoomFooter.height <= zoomBar.y, `文字200%底栏遮挡结尾：${width} ${JSON.stringify({ zoomFooter, zoomBar })}`)
+      await page.screenshot({ path: `${directory}/text-200-bottom-${width}.png` })
+      await captureSection(page, '#schedule', `${directory}/text-200-schedule-${width}.png`)
+    }
+    await page.evaluate(() => document.documentElement.style.removeProperty('font-size'))
+
+    // 浏览器媒体事件与真实音频资源验证；不代表微信或手机系统的自动播放策略。
+    const musicPage = await browser.newPage({ viewport: { width: 390, height: 844 } })
+    await musicPage.goto(url)
+    await ready(musicPage)
+    const music = musicPage.locator('.music-toggle')
+    if (await music.getAttribute('data-state') === 'playing') await music.click()
+    await music.click()
+    await musicPage.waitForFunction(() => document.querySelector('.music-toggle')?.getAttribute('data-state') === 'playing')
+    assert.equal(await musicPage.locator('audio').evaluate(audio => (audio as HTMLAudioElement).paused), false)
+    await music.click()
+    assert.equal(await musicPage.locator('audio').evaluate(audio => (audio as HTMLAudioElement).paused), true)
+    await music.click()
+    await musicPage.waitForFunction(() => document.querySelector('.music-toggle')?.getAttribute('data-state') === 'playing')
+    // 阻止真正离站，仍让应用的捕获阶段处理导航暂停。
+    await musicPage.locator('[data-main-navigation]').evaluate(link => link.addEventListener('click', event => event.preventDefault(), { once: true }))
+    await musicPage.locator('[data-main-navigation]').click()
+    assert.equal(await musicPage.locator('audio').evaluate(audio => (audio as HTMLAudioElement).paused), true)
+    await musicPage.close()
     // 拦截外链只证明点击请求目标，不替代高德或真机路线验收。
     const routePage = await browser.newPage({ viewport: { width: 390, height: 844 }, userAgent: 'Mozilla/5.0 iPhone MicroMessenger/8.0' })
     let clickedUrl = ''
