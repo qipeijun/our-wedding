@@ -2,7 +2,7 @@
 
 戚培俊与涂丽纯的婚礼 H5，以及朋友、长辈、男方父母、女方父母四张图片请帖。Vue 3 + Vite + TypeScript，保留真实摄影、原比例和肤色；本版已取消日历提醒。
 
-2026-10-20最新迭代优先完成H5：专属中文标题、招手封面、精简邀请文案、错位递花双图与集中赴宴信息。设计与交互说明见 [H5设计记录](docs/v3/h5-design.md)，验收见 [H5验证记录](docs/v3/verification.md)。`artifacts/v2/`内的图片请帖和旧交付ZIP为上一版；新请帖尚待制作，后续四版统一招手照，至少2160px宽高清PNG母版，不放大旧图充当超清。
+2026-10-20最新迭代优先完成H5：专属中文标题、招手封面、精简邀请文案、错位递花双图与集中赴宴信息。设计与交互说明见 [H5设计记录](docs/v3/h5-design.md)，验收见 [H5验证记录](docs/v3/verification.md)。图片请帖现已延伸为四张统一招手照的独立海报：3840px宽4K PNG母版与1080px宽独立分享版。设计见[图片请帖记录](docs/v3/poster-design.md)，导出与验收见[海报验收记录](docs/v3/poster-verification.md)。`artifacts/v2/`内请帖和旧ZIP保留为历史版本。
 
 正式信息依据本地执行包与配置；最新会话已重新确认视觉方向，以 `docs/v3/`记录为准，旧执行包不再约束新版的布局和字体。执行包从 `Downloads/our-wedding-agent-pack` 复制，未放进公开资源。用户明确要求二维码融入整体设计；后续新版请帖仍须验证实际扫码。
 
@@ -67,7 +67,7 @@ npm run build
 
 ## 字体
 
-开场标题使用透明定制字形，原图与生成提示词见 [标题素材记录](docs/v3/artwork-generation.md)。姓名与段落标题使用Adobe思源宋体CN SemiBold的文案子集，修改后名称为 `Wedding Serif`，600字重；字体文件约64KB，自托管，不从境外字体CDN加载。许可在 `public/fonts/OFL.txt`，来源、哈希及缺字核验在 `docs/v2/font-manifest.json`。H5正文使用系统黑体；旧图片导出固定为macOS的PingFang SC。
+开场标题使用透明定制字形，原图与生成提示词见 [标题素材记录](docs/v3/artwork-generation.md)。姓名与段落标题使用Adobe思源宋体CN SemiBold的文案子集，修改后名称为 `Wedding Serif`，600字重；字体文件约64KB，自托管，不从境外字体CDN加载。许可在 `public/fonts/OFL.txt`，来源、哈希及缺字核验在 `docs/v2/font-manifest.json`。H5正文使用系统黑体；图片导出正文固定为macOS的PingFang SC；H5与朋友海报按用户对比后的决定恢复旧版「我们结婚啦」艺术字及原比例；其余三张采用「婚礼请柬」行书。海报使用矢量轮廓，H5使用旧版2062×763透明WebP。
 
 改动文字引入新字时，从[Adobe官方仓库](https://github.com/adobe-fonts/source-han-serif/tree/release/SubsetOTF/CN)取得 `SourceHanSerifCN-SemiBold.otf` 和[许可](https://github.com/adobe-fonts/source-han-serif/blob/master/LICENSE.txt)，在独立Python环境安装 `fonttools==4.67.0`、`brotli==1.2.0` 后执行：
 
@@ -80,28 +80,34 @@ npm run build
 
 ## 四张图片请帖与二维码
 
-以下为旧V2导出流程，保留作后续重制起点，不表示新版超清请帖已交付。
-
-导出需本机Google Chrome和macOS PingFang SC，以及两张高分辨率主图 `source/9.1032978.jpg`、`source/9.1032428.jpg`；不需要启动网站。
+四个版本为朋友、长辈、男方父母、女方父母，统一使用完整招手原片。海报独立排版，不直接截取H5。导出需本机Google Chrome、macOS PingFang SC、`source/9.1032978.jpg`（4000×6000）、自托管字体与 `docs/v3/assets/` 内两组标题SVG，不启动网站，不访问线上服务。
 
 ```sh
-# 全部4版
+# 全部4版：4K母版与独立分享版
 npm run invitation:export
 # 单版：friends / elders / groom-parents / bride-parents
 npm run invitation:export -- --variant friends
-# 检查全部4版成品中16个码位及4个PNG/SVG源文件
+# 全部导出后：检查两套二维码源文件及8张成品的16个码位
 npm run qa:qr
 ```
 
-输出在 `artifacts/v2/posters/`：
+输出在 `artifacts/v3/posters/`：
 
-- `invitation-<variant>-master.png`：1080px宽清晰版。
-- `invitation-<variant>-share.jpg`：1080px宽、94质量、4:4:4分享版，**待微信真机验证**。
-- `qr-wedding.png/.svg`、`qr-navigation.png/.svg`：独立真实二维码。
-- `manifest-all.json`：尺寸、字节数、渲染器/实际字体、成品码位、载荷与回读结果。
-- `invitation-<variant>.html`：离线可复查的海报DOM，不放进生产网站。
+- `invitation-<variant>-master.png`：3840px宽PNG母版，原片直接缩至目标宽度，完整保留人物与裙摆。
+- `invitation-<variant>-share.jpg`：独立1080px宽、96质量、4:4:4分享版，**待微信真机转发验证**。
+- `qr-wedding.png/.svg`、`qr-navigation.png/.svg`：母版真实二维码；`share-qr/`保存分享尺寸的独立源码。
+- `manifest-all.json`：原片哈希、每个输出的尺寸/字节数/字体、渲染文字、最终码位与回读记录。单版导出仅更新自己的 `manifest-<variant>.json`；交付全部版本前执行全量导出。
+- `invitation-<variant>.html`：离线可复查母版DOM，不放进生产网站。
 
-根元素360px、DPR3；等待字体及所有图片解码后按真实内容高度截图。二维码使用M纠错，29模块矩阵、每模块8px、四边4模块静区，总宽296px。按原生整数尺寸合成至最终PNG；分享版保持1080px宽，分别读取最终两个码位回验。没有白色装饰框、头像、圆点花码、渐变或长网址。二维码进入现有正式网址；本地导出不意味着新版网站已经发布。
+逻辑宽360px，母版输出3840px、分享输出1080px。等待字体及所有图片解码后，按内容实际高度渲染。中文姓名与正文由字体直接输出，全部艺术标题为矢量路径；不放大旧1080px请帖，不用网页压缩图冒充原片。
+
+二维码为深酒红/米白，米白与整张信息区一致，码点外角与定位框适度圆润。使用M纠错、4模块静区、整数像素模块；母版和分享版分别生成，再原生合成到各自成品。每张最终图片两个码位都需解码；母版码区逐像素核验与原始码图一致，圆角边缘保留必要抗锯齿；分享版增加75%缩小及JPEG质量80再压缩检查。码指向现有正式H5和高德链接，本地导出不代表网站发布或微信实测通过。
+
+两组当前标题的透明SVG、4K PNG与源稿打包于 `artifacts/v3/wedding-title-assets.zip`。四版完整包为 `artifacts/v3/wedding-posters-4k-and-share.zip`，分享包为 `artifacts/v3/wedding-posters-share.zip`。
+
+本轮确认文案见[文案定稿](docs/v3/copy-final.md)，H5与四张图片采用各自完整口吻，10:30统一标为「建议到场」。
+
+阅读预览与原像素细节在 `artifacts/v3/poster-previews/`；视觉取舍见[设计记录](docs/v3/poster-design.md)。PNG母版适合保存和细看，分享版便于发送；微信压缩可能改变清晰度和扫码表现，需实际转发检查。
 
 ## 验证与交付
 

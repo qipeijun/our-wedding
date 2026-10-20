@@ -53,7 +53,7 @@
 
     <footer class="closing-section">
       <div class="closing-photo reveal"><WeddingPhoto :photo="closingPhoto" /></div>
-      <div class="closing-copy section-pad"><p class="small-label">{{ copy.h5.closingLabel }}</p><h2>{{ copy.h5.closing }}</h2><p class="closing-names">{{ wedding.couple.displayName }}</p><a class="back-top" href="#top">{{ copy.ui.backToTop }} <span aria-hidden="true">↑</span></a></div>
+      <div class="closing-copy section-pad"><h2>{{ copy.h5.closing }}</h2><p class="closing-names">{{ copy.h5.closingNames }}</p><a class="back-top" href="#top">{{ copy.ui.backToTop }} <span aria-hidden="true">↑</span></a></div>
     </footer>
 
     <nav v-show="showNavigation" class="sticky-navigation" :aria-hidden="!showNavigation" aria-label="快捷到场导航">

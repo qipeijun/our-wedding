@@ -37,13 +37,13 @@ test('导航与二维码逐字沿用正式网址', () => {
   assert.equal(copy.copyAddressText, `${wedding.venue.name} ${wedding.venue.address}`)
 })
 
-test('H5使用新邀请短稿，请帖文案保持独立，无旧示例或虚构信息', () => {
-  assert.deepEqual(copy.h5.invitationParagraphs, ['诚邀您参加我们的婚礼，见证我们成为一家人。'])
-  assert.deepEqual(copy.variants.friends.bodyParagraphs, ['我们人生中很重要的一天，想邀请你一起度过。', '来喝杯喜酒，和我们拍张合照。'])
-  assert.deepEqual(copy.variants.elders.bodyParagraphs, ['我们即将携手成家，诚挚邀请您到场见证。', '有您的祝福，这一天会更加温暖。'])
-  for (const id of ['groom-parents', 'bride-parents'] as const) assert.deepEqual(copy.variants[id].bodyParagraphs, ['孩子们即将携手成家，我们满怀欢喜。', '诚邀您来喝杯喜酒，与我们一同分享这份喜悦。'])
+test('H5与四版请帖采用确认文案，邀请身份独立且无虚构信息', () => {
+  assert.deepEqual(copy.h5.invitationParagraphs, ['我们即将成为一家人。', '诚邀您来参加我们的婚礼，与我们一起度过这特别的一天。'])
+  assert.deepEqual(copy.variants.friends.bodyParagraphs, ['婚礼这天，想邀请你和我们一起度过。', '来喝杯喜酒，聊聊天，再一起留张合照。'])
+  assert.deepEqual(copy.variants.elders.bodyParagraphs, ['我们即将携手成家，诚邀您参加我们的婚礼。', '盼与您相聚，共享这份喜悦。'])
+  for (const id of ['groom-parents', 'bride-parents'] as const) assert.deepEqual(copy.variants[id].bodyParagraphs, ['孩子们即将携手成家，我们满心欢喜。', '诚邀您来参加婚礼，与我们一同喝杯喜酒。'])
   assert.equal(copy.h5.names, wedding.couple.displayName)
-  assert.equal(copy.h5.closingNames, wedding.couple.displayName)
+  assert.equal(copy.h5.closingNames, `${wedding.couple.displayName} 敬邀`)
   assert.doesNotMatch(JSON.stringify(copy), /张先生|李女士|2025年|梅林大街|拨冗|恋爱[0-9]/)
 })
 
@@ -58,7 +58,10 @@ test('不运行日历流程，静态基础信息不含结束时间', async () =>
   assert.equal((await readdir('public')).some(file => file.endsWith('.ics')), false)
 })
 
-test('首版六张网页照片与三张正式请帖主图保持规定角色', () => {
+test('六张网页照片保持原角色，四张新版请帖统一使用招手原片', () => {
   assert.equal(selectedPhotos.filter(item => !item.id.startsWith('formal-')).length, 6)
-  for (const id of ['elders', 'groom-parents', 'bride-parents'] as const) assert.equal(copy.variants[id].mainPhoto, '9.1032428.jpg')
+  for (const item of Object.values(copy.variants)) {
+    assert.equal(item.mainPhoto, '9.1032978.jpg')
+    assert.equal(item.fallbackPhoto, null)
+  }
 })

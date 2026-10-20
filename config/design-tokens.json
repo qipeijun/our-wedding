@@ -6,7 +6,7 @@
     "ink": "#302426",
     "muted": "#79625E",
     "rule": "#DDC9BC",
-    "qrDark": "#332C28",
+    "qrDark": "#852D27",
     "qrLight": "#FAF5ED"
   },
   "typography": {
@@ -62,14 +62,15 @@
     "desktopWidthToTest": 1440,
     "h5GutterPx": 32,
     "posterLogicalWidth": 360,
-    "posterExportScale": 3,
-    "posterExportWidth": 1080,
+    "posterExportScale": 10.666666666666666,
+    "posterExportWidth": 3840,
     "posterContentGutterPx": 26,
     "posterHeight": "content-driven; never crop lower content",
     "photoRadiusPx": 0,
     "buttonRadiusPx": 2,
     "touchTargetPx": 48,
-    "stickyBarPx": 60
+    "stickyBarPx": 60,
+    "posterShareWidth": 1080
   },
   "motion": {
     "enterMs": 850,

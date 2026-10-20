@@ -6,18 +6,18 @@
     "title": "我们结婚啦",
     "names": "戚培俊 · 涂丽纯",
     "invitationParagraphs": [
-      "诚邀您参加我们的婚礼，见证我们成为一家人。"
+      "我们即将成为一家人。",
+      "诚邀您来参加我们的婚礼，与我们一起度过这特别的一天。"
     ],
-    "closing": "盼与您相聚。",
-    "closingNames": "戚培俊 · 涂丽纯",
+    "closing": "盼与您相聚，\n共度这一天的欢喜。",
+    "closingNames": "戚培俊 · 涂丽纯 敬邀",
     "welcomeLabel": "致亲爱的家人和朋友",
     "welcomeTitle": [
       "这份喜悦，",
       "想与您分享。"
     ],
     "responseTitle": "照片里的欢喜",
-    "scheduleTitle": "这一天，盼您来。",
-    "closingLabel": "诚挚邀请"
+    "scheduleTitle": "这一天，盼您来。"
   },
   "variants": {
     "friends": {
@@ -34,16 +34,16 @@
         }
       ],
       "bodyParagraphs": [
-        "我们人生中很重要的一天，想邀请你一起度过。",
-        "来喝杯喜酒，和我们拍张合照。"
+        "婚礼这天，想邀请你和我们一起度过。",
+        "来喝杯喜酒，聊聊天，再一起留张合照。"
       ],
-      "optionalClosing": "期待见到你。",
+      "optionalClosing": null,
       "signature": null,
       "mainPhoto": "9.1032978.jpg",
       "fallbackPhoto": null
     },
     "elders": {
-      "title": "婚礼邀请",
+      "title": "婚礼请柬",
       "nameMode": "couple",
       "names": [
         {
@@ -56,16 +56,16 @@
         }
       ],
       "bodyParagraphs": [
-        "我们即将携手成家，诚挚邀请您到场见证。",
-        "有您的祝福，这一天会更加温暖。"
+        "我们即将携手成家，诚邀您参加我们的婚礼。",
+        "盼与您相聚，共享这份喜悦。"
       ],
-      "optionalClosing": "盼与您相聚，共享喜悦。",
+      "optionalClosing": null,
       "signature": null,
-      "mainPhoto": "9.1032428.jpg",
-      "fallbackPhoto": "9.1032955.jpg"
+      "mainPhoto": "9.1032978.jpg",
+      "fallbackPhoto": null
     },
     "groom-parents": {
-      "title": "婚礼邀请",
+      "title": "婚礼请柬",
       "nameMode": "relations",
       "names": [
         {
@@ -78,16 +78,16 @@
         }
       ],
       "bodyParagraphs": [
-        "孩子们即将携手成家，我们满怀欢喜。",
-        "诚邀您来喝杯喜酒，与我们一同分享这份喜悦。"
+        "孩子们即将携手成家，我们满心欢喜。",
+        "诚邀您来参加婚礼，与我们一同喝杯喜酒。"
       ],
       "optionalClosing": null,
       "signature": "戚本亮 · 尹李英 敬邀",
-      "mainPhoto": "9.1032428.jpg",
-      "fallbackPhoto": "9.1032955.jpg"
+      "mainPhoto": "9.1032978.jpg",
+      "fallbackPhoto": null
     },
     "bride-parents": {
-      "title": "婚礼邀请",
+      "title": "婚礼请柬",
       "nameMode": "relations",
       "names": [
         {
@@ -100,13 +100,13 @@
         }
       ],
       "bodyParagraphs": [
-        "孩子们即将携手成家，我们满怀欢喜。",
-        "诚邀您来喝杯喜酒，与我们一同分享这份喜悦。"
+        "孩子们即将携手成家，我们满心欢喜。",
+        "诚邀您来参加婚礼，与我们一同喝杯喜酒。"
       ],
       "optionalClosing": null,
       "signature": "涂如古 · 沈慧琪 敬邀",
-      "mainPhoto": "9.1032428.jpg",
-      "fallbackPhoto": "9.1032955.jpg"
+      "mainPhoto": "9.1032978.jpg",
+      "fallbackPhoto": null
     }
   },
   "ui": {

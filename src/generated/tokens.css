@@ -1,2 +1,2 @@
 /* 从 config/design-tokens.json 生成。 */
-:root{--brand:#A93624;--brand-deep:#852D27;--paper:#FFF8F0;--ink:#302426;--muted:#79625E;--rule:#DDC9BC;--qr-dark:#332C28;--qr-light:#FAF5ED;--content-max:560px;--gutter:32px;--body-size:17px;--body-line:1.65;--button-radius:2px;--touch-target:48px;--sticky-height:60px;}
+:root{--brand:#A93624;--brand-deep:#852D27;--paper:#FFF8F0;--ink:#302426;--muted:#79625E;--rule:#DDC9BC;--qr-dark:#852D27;--qr-light:#FAF5ED;--content-max:560px;--gutter:32px;--body-size:17px;--body-line:1.65;--button-radius:2px;--touch-target:48px;--sticky-height:60px;}

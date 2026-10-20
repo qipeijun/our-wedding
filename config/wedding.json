@@ -20,7 +20,7 @@
       "id": "arrival",
       "time": "10:30",
       "timeLabel": "上午10:30",
-      "title": "欢迎到场",
+      "title": "建议到场",
       "location": null,
       "nature": "suggested-arrival"
     },
@@ -105,7 +105,7 @@
     },
     {
       "id": "navigation",
-      "label": "到场导航",
+      "label": "酒店位置",
       "position": "right",
       "url": "https://surl.amap.com/2siOh8Ng46li"
     }

@@ -19,7 +19,7 @@
         "id": "arrival",
         "time": "10:30",
         "timeLabel": "上午10:30",
-        "title": "欢迎到场",
+        "title": "建议到场",
         "location": null,
         "nature": "suggested-arrival"
       },
@@ -63,18 +63,18 @@
       "title": "我们结婚啦",
       "names": "戚培俊 · 涂丽纯",
       "invitationParagraphs": [
-        "诚邀您参加我们的婚礼，见证我们成为一家人。"
+        "我们即将成为一家人。",
+        "诚邀您来参加我们的婚礼，与我们一起度过这特别的一天。"
       ],
-      "closing": "盼与您相聚。",
-      "closingNames": "戚培俊 · 涂丽纯",
+      "closing": "盼与您相聚，\n共度这一天的欢喜。",
+      "closingNames": "戚培俊 · 涂丽纯 敬邀",
       "welcomeLabel": "致亲爱的家人和朋友",
       "welcomeTitle": [
         "这份喜悦，",
         "想与您分享。"
       ],
       "responseTitle": "照片里的欢喜",
-      "scheduleTitle": "这一天，盼您来。",
-      "closingLabel": "诚挚邀请"
+      "scheduleTitle": "这一天，盼您来。"
     },
     "ui": {
       "scheduleHeading": "婚礼安排",

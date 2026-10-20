@@ -110,7 +110,7 @@ img { display: block; max-width: 100%; }
 .closing-section { background: var(--paper); padding-bottom: calc(100px + env(safe-area-inset-bottom)); }
 .closing-photo { padding: 16px var(--gutter) 0; }
 .closing-copy { padding-top: 40px; text-align: center; color: var(--brand-deep); }
-.closing-copy h2 { margin-top: 12px; font-size: clamp(25px,7vw,34px); }
+.closing-copy h2 { font-size: clamp(25px,7vw,34px); white-space: pre-line; }
 .closing-names { margin-top: 18px; font: 600 19px/1.5 var(--font-display); }
 .back-top { display: inline-flex; align-items: center; gap: 12px; min-height: 48px; margin-top: 18px; font-size: 14px; color: var(--muted); }
 .sticky-navigation { position: fixed; z-index: 10; bottom: 0; left: 50%; transform: translateX(-50%); width: min(100%,var(--content-max)); display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 20px calc(8px + env(safe-area-inset-bottom)); background: var(--paper); border-top: 1px solid var(--rule); box-shadow: 0 -4px 24px rgb(51 24 22 / 5%); }
