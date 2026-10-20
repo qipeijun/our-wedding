@@ -55,7 +55,8 @@
       "label": "联系新郎",
       "href": "tel:18126072587",
       "publicDisplayApproved": true
-    }
+    },
+    "backgroundMusic": true
   },
   "copy": {
     "h5": {

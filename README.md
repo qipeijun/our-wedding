@@ -61,6 +61,10 @@ npm run build
 
 `photos:prepare`检查原图哈希，应用方向、sRGB等比缩放并移除EXIF/GPS。旧网页衍生图移入本地 `artifacts/v2/retired-photos/`，不删除原图、不发布未选片。脚本校验 `config/photo-review.json` 中人工复核记录与文件哈希一致；更换照片时必须实际复核后更新记录，不能把脚本执行当成自动视觉审阅。
 
+## 背景音乐
+
+已接入用户提供的《这一天，与你》60秒循环版，仅发布 `public/audio/the-day-with-you-loop.mp3`。进入页面尝试播放，浏览器拦截时等待点击右上角音符；音乐入口仅显示图标，可随时暂停。切后台、导航或拨号前暂停，返回后不自动恢复。来源、文件校验、播放规则和真机边界见 [音乐接入记录](docs/v3/music/README.md)。
+
 ## 字体
 
 开场标题使用透明定制字形，原图与生成提示词见 [标题素材记录](docs/v3/artwork-generation.md)。姓名与段落标题使用Adobe思源宋体CN SemiBold的文案子集，修改后名称为 `Wedding Serif`，600字重；字体文件约64KB，自托管，不从境外字体CDN加载。许可在 `public/fonts/OFL.txt`，来源、哈希及缺字核验在 `docs/v2/font-manifest.json`。H5正文使用系统黑体；旧图片导出固定为macOS的PingFang SC。

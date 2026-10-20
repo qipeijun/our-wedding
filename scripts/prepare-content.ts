@@ -5,7 +5,7 @@ import tokens from '../config/design-tokens.json'
 await mkdir('src/generated', { recursive: true })
 // 父母版文案、内部结束时间与素材档案不进入宾客网页包。
 const page = {
-  wedding: { couple: wedding.couple, date: wedding.date, dateMain, schedule: wedding.schedule, venue: wedding.venue, contact: wedding.contact },
+  wedding: { couple: wedding.couple, date: wedding.date, dateMain, schedule: wedding.schedule, venue: wedding.venue, contact: wedding.contact, backgroundMusic: wedding.features.backgroundMusic },
   copy: { h5: copy.h5, ui: copy.ui, copyAddressText: copy.copyAddressText },
 }
 await writeFile('src/generated/page.json', JSON.stringify(page, null, 2) + '\n')

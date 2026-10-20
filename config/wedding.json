@@ -90,7 +90,7 @@
     "contactPhone": true,
     "venueDiagram": true,
     "rsvp": false,
-    "backgroundMusic": false,
+    "backgroundMusic": true,
     "countdown": false,
     "guestbook": false,
     "payment": false,

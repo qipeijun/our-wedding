@@ -1,0 +1,38 @@
+{
+  "the-day-with-you-demo": {
+    "durationSeconds": 79.0,
+    "sampleRate": 44100,
+    "channels": 2,
+    "targetIntegratedLUFS": -20,
+    "measuredIntegratedLUFS": -19.96,
+    "measuredTruePeakDBTP": -6.65,
+    "waveSamplePeakDbFS": -6.650000681120677,
+    "nonfiniteSamples": 0,
+    "mp3Bytes": 1581660,
+    "loopBoundary": null
+  },
+  "the-day-with-you-piano": {
+    "durationSeconds": 79.0,
+    "sampleRate": 44100,
+    "channels": 2,
+    "targetIntegratedLUFS": -20,
+    "measuredIntegratedLUFS": -19.96,
+    "measuredTruePeakDBTP": -7.17,
+    "waveSamplePeakDbFS": -7.17000080459807,
+    "nonfiniteSamples": 0,
+    "mp3Bytes": 1581660,
+    "loopBoundary": null
+  },
+  "the-day-with-you-loop": {
+    "durationSeconds": 60.0,
+    "sampleRate": 44100,
+    "channels": 2,
+    "targetIntegratedLUFS": -23,
+    "measuredIntegratedLUFS": -22.88,
+    "measuredTruePeakDBTP": -10.13,
+    "waveSamplePeakDbFS": -10.130002665082811,
+    "nonfiniteSamples": 0,
+    "mp3Bytes": 1201317,
+    "loopBoundary": "source tail carried into next cycle; player gapless behavior still needs device testing"
+  }
+}

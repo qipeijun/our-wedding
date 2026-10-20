@@ -1,5 +1,6 @@
 <template>
-  <main ref="invitation" class="invitation">
+  <main ref="invitation" class="invitation" @click.capture="pauseMusicForDeparture">
+    <BackgroundMusic v-if="wedding.backgroundMusic" v-show="!modalOpen" ref="backgroundMusic" />
     <section id="top" ref="coverSection" class="cover" aria-label="婚礼封面">
       <div class="hero-photo">
         <WeddingPhoto :photo="coverPhoto" priority />
@@ -69,8 +70,16 @@ import { coverPhoto, closingPhoto, photoById } from './config/photos'
 import WeddingPhoto from './components/WeddingPhoto.vue'
 import ScheduleList from './components/ScheduleList.vue'
 import VenueGuide from './components/VenueGuide.vue'
+import BackgroundMusic from './components/BackgroundMusic.vue'
 
 const invitation = ref<HTMLElement>()
+const backgroundMusic = ref<InstanceType<typeof BackgroundMusic>>()
+/** 在导航或拨号交给外部应用前暂停；页内跳转与普通点击不改变音乐选择。 */
+function pauseMusicForDeparture(event: MouseEvent) {
+  if (!(event.target instanceof Element)) return
+  const href = event.target.closest('a')?.getAttribute('href')
+  if (href === wedding.venue.mapUrl || href === wedding.contact.href) backgroundMusic.value?.pause()
+}
 const coverSection = ref<HTMLElement>()
 const pastCover = ref(false)
 const modalOpen = ref(false)

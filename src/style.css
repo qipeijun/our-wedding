@@ -117,6 +117,15 @@ img { display: block; max-width: 100%; }
 .sticky-details small { font-size: 13px; margin-top: 1px; color: var(--muted); }
 .sticky-navigation .button-primary { padding: 10px 16px; font-size: 15px; white-space: nowrap; }
 
+.background-music { position: fixed; z-index: 12; top: calc(10px + env(safe-area-inset-top)); right: max(12px,calc((100vw - var(--content-max)) / 2 + 12px)); }
+.music-toggle { position: relative; isolation: isolate; display: grid; place-items: center; width: 48px; height: 48px; padding: 15px; border: 0; border-radius: 50%; background: transparent; color: var(--brand-deep); }
+.music-toggle::before { content: ''; position: absolute; inset: 8px; z-index: -1; border-radius: 50%; background: rgb(255 248 240 / 88%); }
+.music-toggle svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.music-pause-mark { stroke-width: 2; }
+.music-loading-mark { transform-origin: center; animation: music-loading 1.2s linear infinite; }
+.music-toggle:active::before { background: var(--blush); }
+@keyframes music-loading { to { transform: rotate(360deg); } }
+
 .photo-error { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; padding: 32px 20px; color: var(--paper); background: var(--brand-deep); }
 .photo-error button { min-height: 48px; padding: 8px 16px; margin-top: 8px; border: 1px solid currentColor; background: none; color: inherit; }
 .action-dialog { padding: 0; border: 0; background: var(--paper); color: var(--ink); width: min(94vw,860px); max-width: 94vw; max-height: 88dvh; overflow: auto; overscroll-behavior: contain; }
