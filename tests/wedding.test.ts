@@ -34,7 +34,7 @@ test('导航与二维码逐字沿用正式网址', () => {
   assert.equal(wedding.venue.mapUrl, 'https://surl.amap.com/2siOh8Ng46li')
   assert.deepEqual(wedding.qr.map(item => [item.id, item.url]), [['wedding', wedding.publicUrl], ['navigation', wedding.venue.mapUrl]])
   assert.equal(new URL(wedding.publicUrl).pathname, wedding.deployment.currentPublicPath)
-  for (const item of wedding.schedule.filter(item => item.location)) assert.ok(copy.copyAddressText.includes(item.location!))
+  assert.equal(copy.copyAddressText, `${wedding.venue.name} ${wedding.venue.address}`)
 })
 
 test('H5使用新邀请短稿，请帖文案保持独立，无旧示例或虚构信息', () => {

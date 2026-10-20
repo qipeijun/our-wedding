@@ -1,41 +1,31 @@
 <template>
   <div class="copy-control">
-    <button ref="trigger" class="text-link" type="button" :disabled="busy" @click="copyAddress">{{ copy.ui.copyAddress }}</button>
-    <p v-if="copied" class="copy-feedback" role="status">{{ copy.ui.copySuccess }}</p>
-    <ActionDialog ref="manualDialog" :title="copy.ui.copyAddress" @open-change="emit('open-change', $event)">
-      <div class="copy-manual"><p>{{ copy.ui.copyFallback }}</p><textarea :value="copy.copyAddressText" readonly rows="5" :aria-label="copy.ui.copyAddress" /></div>
-    </ActionDialog>
+    <button class="text-link" type="button" :disabled="busy" @click="copyAddress">{{ copy.ui.copyAddress }}</button>
+    <Transition name="copy-feedback"><p v-if="copied" class="copy-feedback" role="status">{{ copy.ui.copySuccess }}</p></Transition>
+    <div v-if="failed" class="copy-manual"><span role="status">{{ copy.ui.copyFallback }}</span><p>{{ copy.copyAddressText }}</p></div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { nextTick, ref } from 'vue'
+import { onBeforeUnmount, ref } from 'vue'
 import { copy } from '../config/wedding'
-import ActionDialog from './ActionDialog.vue'
-const emit = defineEmits<{ 'open-change': [open: boolean] }>()
-const manualDialog = ref<InstanceType<typeof ActionDialog>>()
-const trigger = ref<HTMLButtonElement>()
+import { copyText } from '../lib/clipboard'
+// 复制请求期间禁用重复操作；只有复制接口确认成功后才显示成功提示。
 const busy = ref(false)
 const copied = ref(false)
+// 浏览器拒绝复制时在原处展示可长按的完整地址，不打开弹框。
+const failed = ref(false)
+let feedbackTimer: ReturnType<typeof setTimeout> | undefined
 async function copyAddress() {
+  if (busy.value) return
+  clearTimeout(feedbackTimer)
   busy.value = true
   copied.value = false
-  let needsManual = false
-  try {
-    if (!navigator.clipboard?.writeText) needsManual = true
-    else {
-      await navigator.clipboard.writeText(copy.copyAddressText)
-      copied.value = true
-    }
-  } catch {
-    // 已知权限边界：微信或用户拒绝自动复制时，提供可选择的原文。
-    needsManual = true
-  } finally { busy.value = false }
-  if (needsManual) {
-    // 等按钮解除 disabled 后再记录焦点，关闭弹层才能回到正确触发处。
-    await nextTick()
-    trigger.value?.focus()
-    manualDialog.value?.show()
-  }
+  failed.value = false
+  copied.value = await copyText(copy.copyAddressText)
+  failed.value = !copied.value
+  busy.value = false
+  if (copied.value) feedbackTimer = setTimeout(() => { copied.value = false }, 2200)
 }
+onBeforeUnmount(() => { clearTimeout(feedbackTimer) })
 </script>

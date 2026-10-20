@@ -14,9 +14,12 @@ export function createBackgroundMusic(audio: MusicAudio, onState: (state: MusicS
   let request = 0
   let wantsPlayback = false
   let disposed = false
+  // 仅首播前允许页面操作唤起；播放成功、暂停或错误后交回音符按钮控制。
+  let activationAllowed = true
 
   function update(next: MusicState) {
     state = next
+    if (next === 'playing' || next === 'paused' || next === 'error') activationAllowed = false
     if (!disposed) onState(next)
   }
   function pause() {
@@ -68,7 +71,14 @@ export function createBackgroundMusic(audio: MusicAudio, onState: (state: MusicS
   for (const [event, listener] of Object.entries(events)) audio.addEventListener(event, listener)
 
   return {
-    play,
+    play() {
+      activationAllowed = false
+      return play()
+    },
+    /** 页面加载或真实用户手势触发首播，不覆盖主动暂停与错误重试规则。 */
+    activate() {
+      if (activationAllowed) return play()
+    },
     pause,
     dispose() {
       disposed = true

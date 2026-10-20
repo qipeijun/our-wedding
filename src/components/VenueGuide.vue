@@ -6,7 +6,7 @@
       <img :src="mapUrl" alt="新饭店位于杨仙大道北侧，周边道路非等比例示意，不表示楼栋入口或行车路线" width="480" height="342" loading="lazy" />
     </figure>
     <a class="button-primary" data-main-navigation :href="wedding.venue.mapUrl">{{ copy.ui.navigation }} <span aria-hidden="true">↗</span></a>
-    <div class="secondary-actions"><CopyText @open-change="emit('open-change', $event)" /><a class="text-link" :href="wedding.contact.href">{{ copy.ui.contact }}</a></div>
+    <div class="secondary-actions"><CopyText /><a class="text-link" :href="wedding.contact.href">{{ copy.ui.contact }}</a></div>
     <p class="contact-number">{{ wedding.contact.name }} <a :href="wedding.contact.href">{{ wedding.contact.phone }}</a></p>
   </section>
 </template>
@@ -15,5 +15,4 @@
 import { wedding, copy } from '../config/wedding'
 import mapUrl from '../assets/venue-map.svg?url&no-inline'
 import CopyText from './CopyText.vue'
-const emit = defineEmits<{ 'open-change': [open: boolean] }>()
 </script>

@@ -34,13 +34,73 @@ function setup() {
 
 test('自动播放被浏览器拒绝后保持可开启，不虚报播放且不自动重试', async () => {
   const { audio, states, player } = setup()
-  const pending = player.play()
+  const pending = player.activate()
   assert.equal(states.at(-1), 'loading')
   audio.requests[0]!.reject(new DOMException('User gesture required', 'NotAllowedError'))
   await pending
   assert.equal(states.at(-1), 'idle')
   assert.equal(audio.requests.length, 1)
   assert.ok(!states.includes('playing'))
+  player.dispose()
+})
+
+test('首播受限后可由页面手势再次尝试，触摸与点击不创建并发播放', async () => {
+  const { audio, states, player } = setup()
+  const automatic = player.activate()
+  audio.requests[0]!.reject(new DOMException('Gesture required', 'NotAllowedError'))
+  await automatic
+  const touch = player.activate()
+  await player.activate()
+  assert.equal(audio.requests.length, 2)
+  audio.start(1)
+  await touch
+  assert.equal(states.at(-1), 'playing')
+  player.pause()
+  await player.activate()
+  assert.equal(audio.requests.length, 2)
+  assert.equal(audio.paused, true)
+  const explicit = player.play()
+  audio.start(2)
+  await explicit
+  assert.equal(states.at(-1), 'playing')
+  player.dispose()
+})
+
+test('首播前离开或暂停会取消页面唤起，加载结束也不能重新发声', async () => {
+  const { audio, states, player } = setup()
+  player.pause()
+  await player.activate()
+  assert.equal(audio.requests.length, 0)
+  assert.equal(states.at(-1), 'paused')
+  player.dispose()
+})
+
+test('首播资源错误与系统暂停后，普通交互不重载或恢复', async () => {
+  const { audio, player } = setup()
+  const first = player.activate()
+  audio.dispatchEvent(new Event('error'))
+  audio.requests[0]!.reject(new DOMException('Invalid audio', 'NotSupportedError'))
+  await first
+  await player.activate()
+  assert.equal(audio.requests.length, 1)
+  assert.equal(audio.loads, 0)
+  const explicit = player.play()
+  audio.start(1)
+  await explicit
+  audio.pause()
+  await player.activate()
+  assert.equal(audio.requests.length, 2)
+  assert.equal(audio.paused, true)
+  player.dispose()
+})
+
+test('音符手动开启被拒绝后，不被后续页面交互代替重试', async () => {
+  const { audio, player } = setup()
+  const explicit = player.play()
+  audio.requests[0]!.reject(new DOMException('Denied', 'NotAllowedError'))
+  await explicit
+  await player.activate()
+  assert.equal(audio.requests.length, 1)
   player.dispose()
 })
 

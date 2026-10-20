@@ -44,23 +44,48 @@ function pause() {
 function startAutomatically() {
   if (!autoStartPending) return
   autoStartPending = false
-  // 外部地图返回时可能重新创建页面，不能仅依赖内存中的暂停状态。
-  const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming | undefined
-  if (!document.hidden && navigation?.type !== 'back_forward') void player?.play()
+  if (!document.hidden) void player?.activate()
+}
+function onFirstInteraction(event: Event) {
+  if (!event.isTrusted || document.hidden) return
+  // 音符由自己的点击控制；离开页面的操作优先暂停，避免导航前短暂响起。
+  if (event.target instanceof Element) {
+    if (event.target.closest('.music-toggle')) return
+    const href = event.target.closest('a')?.getAttribute('href')
+    if (href && !href.startsWith('#')) return
+  }
+  // 直接在手势调用栈里播放，不经定时器或 await 消耗浏览器激活机会。
+  autoStartPending = false
+  void player?.activate()
+}
+function removeInteractionListeners() {
+  document.removeEventListener('touchend', onFirstInteraction, true)
+  document.removeEventListener('click', onFirstInteraction, true)
 }
 function onVisibilityChange() {
   if (document.hidden) pause()
 }
 onMounted(() => {
   if (!audio.value) return
-  player = createBackgroundMusic(audio.value, next => { state.value = next })
-  // 封面资源优先；只在初始页面加载结束后发起音乐请求，不监听全页触摸或微信桥接。
+  player = createBackgroundMusic(audio.value, next => {
+    state.value = next
+    if (next === 'playing' || next === 'paused' || next === 'error') removeInteractionListeners()
+  })
+  // 历史返回也可能重新创建页面，此时只能由音符按钮主动恢复。
+  const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming | undefined
+  if (navigation?.type === 'back_forward' || document.hidden) pause()
+  else {
+    document.addEventListener('touchend', onFirstInteraction, { capture: true, passive: true })
+    document.addEventListener('click', onFirstInteraction, { capture: true })
+  }
+  // 未交互时仍让封面资源优先，加载结束后自动尝试一次。
   if (document.readyState === 'complete') startAutomatically()
   else window.addEventListener('load', startAutomatically, { once: true })
   document.addEventListener('visibilitychange', onVisibilityChange)
   window.addEventListener('pagehide', pause)
 })
 onBeforeUnmount(() => {
+  removeInteractionListeners()
   window.removeEventListener('load', startAutomatically)
   document.removeEventListener('visibilitychange', onVisibilityChange)
   window.removeEventListener('pagehide', pause)

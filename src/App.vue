@@ -1,6 +1,6 @@
 <template>
   <main ref="invitation" class="invitation" @click.capture="pauseMusicForDeparture">
-    <BackgroundMusic v-if="wedding.backgroundMusic" v-show="!modalOpen" ref="backgroundMusic" />
+    <BackgroundMusic v-if="wedding.backgroundMusic" ref="backgroundMusic" />
     <section id="top" ref="coverSection" class="cover" aria-label="婚礼封面">
       <div class="hero-photo">
         <WeddingPhoto :photo="coverPhoto" priority />
@@ -47,7 +47,7 @@
       <div class="event-paper">
         <div class="event-date"><time :datetime="wedding.date.iso">{{ wedding.dateMain }}</time><p>{{ wedding.date.weekday }}<span aria-hidden="true"> · </span>{{ wedding.date.lunarFull }}</p></div>
         <ScheduleList />
-        <VenueGuide @open-change="modalOpen = $event" />
+        <VenueGuide />
       </div>
     </section>
 
@@ -82,13 +82,12 @@ function pauseMusicForDeparture(event: MouseEvent) {
 }
 const coverSection = ref<HTMLElement>()
 const pastCover = ref(false)
-const modalOpen = ref(false)
 const mainNavigationVisible = ref(false)
 // 标题素材加载失败时显示同一文案的可读字形，仍能识别邀请主题。
 const titleArtworkFailed = ref(false)
 // 等待素材加载后才播放标题入场，慢网下不会提前消耗掉开场动画。
 const titleArtworkReady = ref(false)
-const showNavigation = computed(() => pastCover.value && !modalOpen.value && !mainNavigationVisible.value)
+const showNavigation = computed(() => pastCover.value && !mainNavigationVisible.value)
 const titleArtwork = `${import.meta.env.BASE_URL}artwork/wedding-title.webp`
 const shortDate = new Intl.DateTimeFormat('zh-CN', { month: 'long', day: 'numeric', timeZone: wedding.date.timeZone }).format(new Date(`${wedding.date.iso}T12:00:00+08:00`))
 let coverObserver: IntersectionObserver | undefined
