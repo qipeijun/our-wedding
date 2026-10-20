@@ -3,7 +3,7 @@
     <h2 id="venue-title" class="sr-only">{{ copy.ui.venueHeading }}</h2>
     <div class="venue-address"><h3>{{ wedding.venue.name }}</h3><p>{{ wedding.venue.address }}</p></div>
     <figure class="venue-diagram">
-      <img :src="mapUrl" alt="新饭店位于杨仙大道北侧，周边道路非等比例示意，不表示楼栋入口或行车路线" width="480" height="342" loading="lazy" />
+      <img :src="mapUrl" alt="新饭店位于杨仙大道，周边道路非等比例示意，不表示楼栋入口或行车路线" width="480" height="342" loading="lazy" />
     </figure>
     <a class="button-primary" data-main-navigation :href="wedding.venue.mapUrl">{{ copy.ui.navigation }} <span aria-hidden="true">↗</span></a>
     <div class="secondary-actions"><CopyText /><a class="text-link" :href="wedding.contact.href">{{ copy.ui.contact }}</a></div>

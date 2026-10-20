@@ -11,7 +11,7 @@ test('正式事实与交接规范一致，日期不受设备时区影响', () =>
   assert.equal(wedding.date.lunarFull, '农历丙午年十一月十六')
   assert.deepEqual(wedding.schedule.map(item => [item.time, item.location]), [['10:30', null], ['11:00', '附楼四合院'], ['12:00', '主楼A栋三楼5号厅']])
   assert.equal(wedding.venue.name, '新饭店')
-  assert.equal(wedding.venue.address, '江西省赣州市赣县区杨仙大道北侧')
+  assert.equal(wedding.venue.address, '江西省赣州市赣县区杨仙大道')
   assert.equal(wedding.contact.phone, '18126072587')
   assert.equal(wedding.contact.href, `tel:${wedding.contact.phone}`)
 })
