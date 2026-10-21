@@ -28,6 +28,15 @@ export function createBackgroundMusic(audio: MusicAudio, onState: (state: MusicS
     audio.pause()
     update('paused')
   }
+  /** 临时隐藏只取消未完成的首播；已播放或主动控制后仍遵循暂停规则。 */
+  function suspend() {
+    if (!activationAllowed) { pause(); return }
+    request += 1
+    wantsPlayback = false
+    // 先回到待首播状态，避免 pause 事件将临时隐藏误记为主动暂停。
+    update('idle')
+    audio.pause()
+  }
   async function play() {
     if (disposed || wantsPlayback) return
     // 网络或解码失败后，只有宾客再次点击才重新加载文件。
@@ -57,6 +66,7 @@ export function createBackgroundMusic(audio: MusicAudio, onState: (state: MusicS
   function onPause() {
     // 忽略上一轮 pause 的迟到事件；系统中断也必须回到真实的暂停状态。
     if (!audio.paused || state === 'error') return
+    if (state === 'idle' && !wantsPlayback) return
     request += 1
     wantsPlayback = false
     update('paused')
@@ -80,6 +90,7 @@ export function createBackgroundMusic(audio: MusicAudio, onState: (state: MusicS
       if (activationAllowed) return play()
     },
     pause,
+    suspend,
     dispose() {
       disposed = true
       request += 1

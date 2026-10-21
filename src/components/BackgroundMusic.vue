@@ -63,7 +63,9 @@ function removeInteractionListeners() {
   document.removeEventListener('click', onFirstInteraction, true)
 }
 function onVisibilityChange() {
-  if (document.hidden) pause()
+  if (!document.hidden) return
+  autoStartPending = false
+  player?.suspend()
 }
 onMounted(() => {
   if (!audio.value) return
@@ -73,10 +75,12 @@ onMounted(() => {
   })
   // 历史返回也可能重新创建页面，此时只能由音符按钮主动恢复。
   const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming | undefined
-  if (navigation?.type === 'back_forward' || document.hidden) pause()
+  if (navigation?.type === 'back_forward') pause()
   else {
     document.addEventListener('touchend', onFirstInteraction, { capture: true, passive: true })
     document.addEventListener('click', onFirstInteraction, { capture: true })
+    // 后台打开也保留首播监听，回到前台后由真实手势开启。
+    onVisibilityChange()
   }
   // 未交互时仍让封面资源优先，加载结束后自动尝试一次。
   if (document.readyState === 'complete') startAutomatically()

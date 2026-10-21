@@ -75,6 +75,75 @@ test('首播前离开或暂停会取消页面唤起，加载结束也不能重�
   player.dispose()
 })
 
+test('首播前隐藏或自动播放受限后隐藏，仍允许下一次页面手势开启', async () => {
+  for (const blocked of [false, true]) {
+    const { audio, states, player } = setup()
+    if (blocked) {
+      const automatic = player.activate()
+      audio.requests[0]!.reject(new DOMException('Gesture required', 'NotAllowedError'))
+      await automatic
+    }
+    const count = audio.requests.length
+    player.suspend()
+    assert.equal(audio.paused, true)
+    assert.equal(states.at(-1), 'idle')
+    assert.equal(audio.requests.length, count, '隐藏不创建新的播放请求')
+    const gesture = player.activate()
+    audio.start(count)
+    await gesture
+    assert.equal(states.at(-1), 'playing')
+    player.dispose()
+  }
+})
+
+test('首播加载中隐藏会取消旧请求，迟到事件不发声且不丢失手势唤起', async () => {
+  const { audio, states, player } = setup()
+  const first = player.activate()
+  player.suspend()
+  audio.start(0)
+  await first
+  assert.equal(audio.paused, true)
+  assert.equal(states.at(-1), 'idle')
+  assert.ok(!states.includes('paused'))
+  const retry = player.activate()
+  audio.start(1)
+  await retry
+  assert.equal(states.at(-1), 'playing')
+  player.dispose()
+})
+
+test('首播加载中隐藏后，旧请求拒绝不能覆盖下一次手势播放', async () => {
+  const { audio, states, player } = setup()
+  const first = player.activate()
+  player.suspend()
+  const retry = player.activate()
+  audio.start(1)
+  await retry
+  audio.requests[0]!.reject(new DOMException('Interrupted', 'AbortError'))
+  await first
+  assert.equal(states.at(-1), 'playing')
+  assert.equal(audio.paused, false)
+  player.dispose()
+})
+
+test('播放后隐藏或主动暂停后隐藏，不恢复普通手势唤起', async () => {
+  for (const played of [false, true]) {
+    const { audio, states, player } = setup()
+    if (played) {
+      const first = player.activate()
+      audio.start(0)
+      await first
+    } else player.pause()
+    const count = audio.requests.length
+    player.suspend()
+    await player.activate()
+    assert.equal(audio.requests.length, count)
+    assert.equal(audio.paused, true)
+    assert.equal(states.at(-1), 'paused')
+    player.dispose()
+  }
+})
+
 test('首播资源错误与系统暂停后，普通交互不重载或恢复', async () => {
   const { audio, player } = setup()
   const first = player.activate()
