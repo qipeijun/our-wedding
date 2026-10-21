@@ -58,7 +58,7 @@ try {
     await checkReadingLayout(page)
     assert.doesNotMatch(await page.locator('meta[name="viewport"]').getAttribute('content') ?? '', /user-scalable\s*=\s*no|maximum-scale|minimum-scale/)
     assert.equal(await page.locator('html').evaluate(element => getComputedStyle(element).touchAction), 'auto')
-    for (const size of await page.locator('.date-main,.date-secondary,.schedule-location,.venue-address p,.contact-number,.sticky-details span').evaluateAll(elements => elements.map(element => parseFloat(getComputedStyle(element).fontSize)))) assert.ok(size >= 15.9, '关键信息至少16px')
+    for (const size of await page.locator('.date-main,.date-secondary,.schedule-location,.venue-address p,.sticky-details span').evaluateAll(elements => elements.map(element => parseFloat(getComputedStyle(element).fontSize)))) assert.ok(size >= 15.9, '关键信息至少16px')
     const layout = await page.evaluate(() => {
       const main = document.querySelector('main')!.getBoundingClientRect()
       const heading = document.querySelector('.hero-heading')!.getBoundingClientRect()
@@ -76,6 +76,8 @@ try {
     assert.equal(await page.getByText('设置提醒', { exact: true }).count(), 0)
     assert.equal(await page.locator('a[href*=".ics"],a[href^="webcal:"],a[href*="calendar.google"]').count(), 0)
     const schedule = await page.locator('#schedule').innerText()
+    assert.ok(!schedule.includes(wedding.contact.phone), '界面只保留拨号入口，不显示号码文字')
+    assert.equal(await page.locator(`a[href="${wedding.contact.href}"]`).innerText(), copy.ui.contact)
     for (const item of wedding.schedule) { assert.ok(schedule.includes(item.time)); if (item.location) assert.ok(schedule.includes(item.location)) }
     assert.doesNotMatch(schedule, /请先到|午宴移步/)
     assert.equal(await page.getByText('如何到酒店', { exact: true }).count(), 0)
@@ -120,8 +122,8 @@ try {
     for (const href of await page.getByRole('link', { name: new RegExp(copy.ui.navigation) }).evaluateAll(links => links.map(link => link.getAttribute('href')))) assert.equal(href, wedding.venue.mapUrl)
     assert.equal(await page.getByRole('link', { name: copy.ui.contact, exact: true }).getAttribute('href'), wedding.contact.href)
     await page.locator('.venue-diagram').scrollIntoViewIfNeeded()
-    assert.equal(await page.locator('.venue-diagram img').isVisible(), true, '地图在正文直接展开')
-    assert.equal(await page.locator('.venue-diagram button').count(), 0, '查看地图不需要额外点击')
+    assert.equal(await page.locator('.venue-diagram svg').isVisible(), true, 'SVG 线路指引在正文直接展开')
+    assert.equal(await page.locator('.venue-diagram button').count(), 0, '手绘线路直接展示，无额外播放控件')
     await page.screenshot({ path: `${directory}/map-inline.png` })
     // 模拟异步剪贴板：验证 promise 完成前不能显示成功。
     await page.evaluate(`Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText: (text) => new Promise(resolve => { Object.assign(window, { copiedAddress: text, finishCopy: resolve }) }) } })`)
@@ -177,6 +179,41 @@ try {
     await page.evaluate(() => document.documentElement.style.removeProperty('font-size'))
 
     // 浏览器媒体事件与真实音频资源验证；不代表微信或手机系统的自动播放策略。
+    for (const initiallyHidden of [false, true]) {
+      const firstPlayPage = await browser.newPage({ viewport: { width: 390, height: 844 } })
+      // 固定首次自动播放被拒绝的前提，并模拟后台打开；随后仍调用原生音频播放。
+      await firstPlayPage.addInitScript(hidden => {
+        Object.defineProperty(document, 'hidden', { configurable: true, value: hidden })
+        const play = HTMLMediaElement.prototype.play
+        HTMLMediaElement.prototype.play = function () {
+          if (!navigator.userActivation.isActive) return Promise.reject(new DOMException('Gesture required', 'NotAllowedError'))
+          return play.call(this)
+        }
+      }, initiallyHidden)
+      await firstPlayPage.goto(url)
+      await firstPlayPage.waitForFunction(() => document.querySelector('.music-toggle')?.getAttribute('data-state') === 'idle')
+      await firstPlayPage.evaluate(() => {
+        Object.defineProperty(document, 'hidden', { configurable: true, value: true })
+        document.dispatchEvent(new Event('visibilitychange'))
+        Object.defineProperty(document, 'hidden', { configurable: true, value: false })
+        document.dispatchEvent(new Event('visibilitychange'))
+      })
+      assert.equal(await firstPlayPage.locator('.music-toggle').getAttribute('data-state'), 'idle')
+      assert.equal(await firstPlayPage.locator('audio').evaluate(audio => (audio as HTMLAudioElement).paused), true, '回到前台不能自行发声')
+      await firstPlayPage.locator('.hero-photo .wedding-photo img').click()
+      await firstPlayPage.waitForFunction(() => document.querySelector('.music-toggle')?.getAttribute('data-state') === 'playing')
+      assert.equal(await firstPlayPage.locator('audio').evaluate(audio => (audio as HTMLAudioElement).paused), false)
+      await firstPlayPage.locator('.music-toggle').click()
+      await firstPlayPage.evaluate(() => {
+        Object.defineProperty(document, 'hidden', { configurable: true, value: true })
+        document.dispatchEvent(new Event('visibilitychange'))
+        Object.defineProperty(document, 'hidden', { configurable: true, value: false })
+        document.dispatchEvent(new Event('visibilitychange'))
+      })
+      await firstPlayPage.locator('.hero-photo .wedding-photo img').click()
+      assert.equal(await firstPlayPage.locator('.music-toggle').getAttribute('data-state'), 'paused', '主动暂停后仍不允许照片点击恢复音乐')
+      await firstPlayPage.close()
+    }
     const musicPage = await browser.newPage({ viewport: { width: 390, height: 844 } })
     await musicPage.goto(url)
     await ready(musicPage)
@@ -207,7 +244,8 @@ try {
     const nojs = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 390, height: 844 } })
     const fallback = await nojs.newPage()
     await fallback.goto(url)
-    assert.ok((await fallback.locator('body').innerText()).includes(wedding.contact.phone))
+    assert.ok(!(await fallback.locator('body').innerText()).includes(wedding.contact.phone))
+    assert.equal(await fallback.locator(`a[href="${wedding.contact.href}"]`).innerText(), copy.ui.contact)
     await fallback.screenshot({ path: `${directory}/no-javascript.png`, fullPage: true })
     await nojs.close()
     // 仅阻断封面图片：日期和姓名仍可见，手动重试后恢复照片。

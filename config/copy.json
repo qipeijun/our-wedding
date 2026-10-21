@@ -40,7 +40,8 @@
       "optionalClosing": null,
       "signature": null,
       "mainPhoto": "9.1032978.jpg",
-      "fallbackPhoto": null
+      "fallbackPhoto": null,
+      "venueName": "新饭店"
     },
     "elders": {
       "title": "婚礼请柬",
@@ -62,7 +63,8 @@
       "optionalClosing": null,
       "signature": null,
       "mainPhoto": "9.1032978.jpg",
-      "fallbackPhoto": null
+      "fallbackPhoto": null,
+      "venueName": "新饭店"
     },
     "groom-parents": {
       "title": "婚礼请柬",
@@ -79,12 +81,13 @@
       ],
       "bodyParagraphs": [
         "孩子们即将携手成家，我们满心欢喜。",
-        "诚邀您来参加婚礼，与我们一同喝杯喜酒。"
+        "诚邀您出席婚礼，敬备喜筵，恭候光临。"
       ],
       "optionalClosing": null,
       "signature": "戚本亮 · 尹李英 敬邀",
       "mainPhoto": "9.1032978.jpg",
-      "fallbackPhoto": null
+      "fallbackPhoto": null,
+      "venueName": "新饭店酒楼"
     },
     "bride-parents": {
       "title": "婚礼请柬",
@@ -101,17 +104,18 @@
       ],
       "bodyParagraphs": [
         "孩子们即将携手成家，我们满心欢喜。",
-        "诚邀您来参加婚礼，与我们一同喝杯喜酒。"
+        "诚邀您出席婚礼，敬备喜筵，恭候光临。"
       ],
       "optionalClosing": null,
       "signature": "涂如古 · 沈慧琪 敬邀",
       "mainPhoto": "9.1032978.jpg",
-      "fallbackPhoto": null
+      "fallbackPhoto": null,
+      "venueName": "新饭店"
     }
   },
   "ui": {
     "scheduleHeading": "婚礼安排",
-    "venueHeading": "到场指南",
+    "venueHeading": "酒店位置",
     "navigation": "导航到新饭店",
     "copyAddress": "复制地址",
     "copySuccess": "地址已复制",

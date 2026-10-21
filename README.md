@@ -49,7 +49,7 @@ npm run preview
 - `docs/v2/source-inventory.json`：本轮实际47张文件的尺寸、方向、哈希及原档案一致性。
 - `docs/v2/photo-selection.json`：本轮8张候选的原图复核、角色、无裁切记录与网页衍生图路径/尺寸/字节数。
 - `public/photos/`：仅六张网页照片的480/800/1200/1600px WebP与1200px JPEG回退。
-- `src/assets/venue-map.svg`：沿用既有周边道路示意图，直接以大图完整展示，无图注和二次点击；不虚构楼栋入口、停车位或路线。它不是酒店内部楼层图。
+- `src/assets/venue-map-h5.webp` 与 `src/components/VenueRoute.vue`：展示手绘周边总览和附楼线路，SVG以7秒周期循环描线，离开线路区域暂停，减少动态效果时展示完整静态路线；路线依据用户确认的斑马线和公园路径。
 
 换片必须先复核原图，更新选片配置、描述和视觉审阅记录，再执行：
 
@@ -80,7 +80,7 @@ npm run build
 
 ## 四张图片请帖与二维码
 
-四个版本为朋友、长辈、男方父母、女方父母，统一使用完整招手原片。海报独立排版，不直接截取H5。导出需本机Google Chrome、macOS PingFang SC、`source/9.1032978.jpg`（4000×6000）、自托管字体与 `docs/v3/assets/` 内两组标题SVG，不启动网站，不访问线上服务。
+四个版本为朋友、长辈、男方父母、女方父母，统一使用完整招手原片。四版不展示底部联系人和电话；男方父母版酒店展示名为「新饭店酒楼」，其余三版为「新饭店」。海报独立排版，不直接截取H5。导出需本机Google Chrome、macOS PingFang SC、`source/9.1032978.jpg`（4000×6000）、自托管字体与 `docs/v3/assets/` 内两组标题SVG，不启动网站，不访问线上服务。
 
 ```sh
 # 全部4版：4K母版与独立分享版
@@ -104,6 +104,8 @@ npm run qa:qr
 二维码为深酒红/米白，米白与整张信息区一致，码点外角与定位框适度圆润。使用M纠错、4模块静区、整数像素模块；母版和分享版分别生成，再原生合成到各自成品。每张最终图片两个码位都需解码；母版码区逐像素核验与原始码图一致，圆角边缘保留必要抗锯齿；分享版增加75%缩小及JPEG质量80再压缩检查。码指向现有正式H5和高德链接，本地导出不代表网站发布或微信实测通过。
 
 两组当前标题的透明SVG、4K PNG与源稿打包于 `artifacts/v3/wedding-title-assets.zip`。四版完整包为 `artifacts/v3/wedding-posters-4k-and-share.zip`，分享包为 `artifacts/v3/wedding-posters-share.zip`。
+
+独立分享地图运行 `npx tsx scripts/export-map-share.ts`，输出位于 `artifacts/v3/map-share/`。右下角使用高德导航二维码、相等的右下边距和浅底透水效果；H5底图不含二维码。1024px PNG保持原始地图像素，4096px PNG将底图放大并重新生成原生二维码，不代表增加绘画细节。当前海报与地图的组合交付包为 `artifacts/v3/wedding-materials-share.zip` 和 `artifacts/v3/wedding-materials-hd.zip`。
 
 本轮确认文案见[文案定稿](docs/v3/copy-final.md)，H5与四张图片采用各自完整口吻，10:30统一标为「建议到场」。
 
@@ -136,6 +138,6 @@ npm run qa:qr
 
 正式网址保持 [qipeijun.github.io/our-wedding/](https://qipeijun.github.io/our-wedding/)，高德链接保持 [新饭店](https://surl.amap.com/2siOh8Ng46li)。`vite.config.ts` 从配置读取 `/our-wedding/`，避免子路径资源404。
 
-当前开发分支为 `codex/design-v2`。本地 `main` 保存此前GitHub Pages静态产物，含旧日历文件；当前开发分支没有自动部署工作流。本版按用户要求保存本地提交，不推送、合并或覆盖线上版本，不创建新的部署平台或自动发布动作。后续获准发布时，沿用既有静态站点方式完整替换发布产物，并移除旧的 `.ics`，不要把源码、原图、设计包或artifacts整体上传。
+开发分支 `codex/design-v2` 保存源码，`main` 仅保存GitHub Pages静态产物。发布须先获得用户授权，再执行构建，通过独立检出目录同步完整 `dist`、移除过期哈希资源并逐文件核对后提交和推送；不要将源码合并进 `main`，也不要把原图、设计包或artifacts整体上传。2026-10-21本轮用户已授权源码提交、素材构建及 `main` 产物推送。
 
 微信iPhone/Android、国内蜂窝网络/Wi-Fi、转发压缩后双码识别、实际导航与拨号均需真机测试。`share`文件名不表示已通过微信测试。页面不承诺微信原生位置或自定义分享卡片，无公众号鉴权、数据采集与后台接口。

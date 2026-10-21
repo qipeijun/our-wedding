@@ -32,7 +32,7 @@ img { display: block; max-width: 100%; }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
 .invitation { width: 100%; max-width: var(--content-max); margin-inline: auto; background: var(--paper); overflow: clip; }
 .section-pad { padding-inline: var(--gutter); }
-.small-label { font-size: 0.8235rem; font-weight: 500; letter-spacing: .08em; }
+.small-label { font-size: 0.8235rem; font-weight: 500; letter-spacing: .08em; color: var(--muted); }
 .photo-frame { position: relative; }
 .wedding-photo,.wedding-photo img { display: block; width: 100%; height: auto; }
 
@@ -44,11 +44,11 @@ img { display: block; max-width: 100%; }
 .hero-heading.is-ready { animation: title-arrive 1.2s cubic-bezier(.16,1,.3,1) both; }
 .hero-heading img { width: 100%; height: auto; }
 .hero-heading h1 { font-size: clamp(1.8824rem,9vw,2.9412rem); text-align: center; }
-.cover-invite { position: relative; display: flex; flex: 1; flex-direction: column; justify-content: center; padding: 32px var(--gutter) max(32px,env(safe-area-inset-bottom)); text-align: center; }
+.cover-invite { position: relative; display: flex; flex: 1; flex-direction: column; justify-content: center; padding: 28px var(--gutter) max(28px,env(safe-area-inset-bottom)); text-align: center; }
 .couple-names { display: flex; justify-content: center; align-items: center; gap: 18px; flex-wrap: wrap; font: 600 clamp(1.765rem,7.4vw,2.118rem)/1.4 var(--font-display); }
 .couple-names span { white-space: nowrap; }
 .couple-names b { font: 400 1.3529rem/1 Georgia,serif; opacity: .7; }
-.cover-details { display: flex; flex-direction: column; align-items: center; gap: 16px; margin-top: 20px; }
+.cover-details { display: flex; flex-direction: column; align-items: center; gap: 12px; margin-top: 16px; }
 .date-main { font-size: 1.0588rem; font-variant-numeric: tabular-nums; }
 .date-secondary { font-size: 0.9412rem; margin-top: 8px; }
 .jump-link { display: flex; align-items: center; gap: 10px; min-height: 48px; }
@@ -62,6 +62,8 @@ img { display: block; max-width: 100%; }
 .welcome-heading h2 span+span { margin-left: 1.2em; }
 .invitation-copy { padding-block: 32px 48px; font-size: 1rem; line-height: 1.8; text-wrap: pretty; }
 .invitation-copy p+p { margin-top: 12px; }
+/* 按逗号保留邀请语的语意停顿，窄屏及放大文字仍可在短句内部自然换行。 */
+.invitation-phrase { display: block; text-wrap: pretty; }
 
 /* 递花双图保持原有左右方向；错位只作用于版面，不遮挡照片。 */
 .response-section { background: var(--paper); }
@@ -87,13 +89,14 @@ img { display: block; max-width: 100%; }
 .schedule-row:not(:last-child)::before { content: ''; position: absolute; top: calc(.65rem + 3px); bottom: calc(-.65rem - 3px); left: calc(4.5rem + 12px); width: 1px; background: var(--rule); }
 .schedule-row::after { content: ''; position: absolute; top: .65rem; left: calc(4.5rem + 9px); width: 7px; height: 7px; border: 1px solid var(--brand); border-radius: 50%; background: var(--paper); }
 .schedule-row dt { color: var(--brand-deep); font: 600 1.4118rem/1.35 var(--font-display); font-variant-numeric: tabular-nums; }
+.schedule-row.is-suggested, .schedule-row.is-suggested dt { color: var(--muted); }
 .schedule-row dd { font-size: 1.0588rem; }
-.schedule-location { display: block; margin-top: 8px; color: var(--ink); font-size: 1rem; overflow-wrap: break-word; text-wrap: pretty; }
+.schedule-location { display: block; margin-top: 6px; color: var(--muted); font-size: 1rem; overflow-wrap: break-word; text-wrap: pretty; }
 .venue-guide { border-top: 1px solid var(--rule); padding-top: 24px; }
+.venue-label { margin-bottom: 6px; color: var(--muted); font-family: inherit; font-size: 0.8235rem; font-weight: 400; line-height: 1.5; letter-spacing: .08em; }
 .venue-address h3 { color: var(--brand-deep); font-size: 1.6471rem; margin-bottom: 8px; }
-.venue-address p { font-size: 0.9412rem; line-height: 1.8; text-wrap: pretty; }
+.venue-address p { color: var(--muted); font-size: 0.9412rem; line-height: 1.8; text-wrap: pretty; }
 .venue-diagram { margin: 24px calc(-1 * var(--gutter)) 24px; }
-.venue-diagram img { width: 100%; height: auto; }
 .button-primary { display: flex; align-items: center; justify-content: center; gap: 18px; min-height: var(--touch-target); padding: 13px 18px; background: var(--brand-deep); color: var(--paper); border-radius: var(--button-radius); font-size: 0.9412rem; font-weight: 500; transition: background .2s; }
 .button-primary:hover { background: var(--wine); }
 .text-link { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; color: var(--brand-deep); }
@@ -102,8 +105,6 @@ img { display: block; max-width: 100%; }
 .copy-feedback { font-size: 0.8235rem; color: var(--brand-deep); }
 .copy-feedback-leave-active { transition: opacity .45s ease; }
 .copy-feedback-leave-to { opacity: 0; }
-.contact-number { font-size: 0.9412rem; text-align: center; color: var(--muted); }
-.contact-number a { display: inline-flex; align-items: center; min-height: 48px; color: var(--ink); font-variant-numeric: tabular-nums; }
 
 .closing-section { background: var(--paper); padding-bottom: calc(var(--navigation-height, 81px) + 24px); }
 .closing-photo { padding-inline: var(--gutter); }
@@ -149,7 +150,7 @@ img { display: block; max-width: 100%; }
   body { padding-block: 32px; }
   .background-music { top: calc(44px + env(safe-area-inset-top)); }
   .cover { min-height: calc(100dvh - 64px); }
-  .cover-invite { padding-block: 32px; }
+  .cover-invite { padding-block: 28px; }
 }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }

@@ -48,7 +48,7 @@ h1,h2,p,dl,dd { margin: 0; }
 h1 { font: 600 42px/1.35 'Wedding Serif',serif; letter-spacing: .06em; }
 .title-art { display: block; width: 100%; height: auto; }
 .identity {
-  padding: 22px 26px 24px;
+  padding: 16px 26px 18px;
   background: ${colors.brandDeep};
   color: ${colors.paper};
 }
@@ -57,32 +57,36 @@ h1 { font: 600 42px/1.35 'Wedding Serif',serif; letter-spacing: .06em; }
 .person { display: block; white-space: nowrap; font: 600 27px/1.4 'Wedding Serif',serif; }
 .name-dot { font: 400 21px/1 'Wedding Serif',serif; opacity: .75; }
 .relations .name-dot { align-self: flex-end; margin-bottom: 12px; }
-.relation { display: block; font-size: 16px; line-height: 1.5; margin-bottom: 5px; }
-.info { padding: 30px ${tokens.layout.posterContentGutterPx}px 30px; }
-.body-copy { max-width: ${variant === 'friends' ? '260px' : '100%'}; margin-inline: auto; text-align: center; }
+.relation { display: block; font-size: 16px; line-height: 1.4; margin-bottom: 3px; }
+.info { padding: 26px ${tokens.layout.posterContentGutterPx}px 28px; }
+.body-copy { max-width: ${variant === 'friends' ? '260px' : '280px'}; margin-inline: auto; text-align: center; }
 .body-copy .phrase { display: inline-block; }
+/* 父母版先表达邀请，再将敬备喜筵与恭候光临连为一行。 */
+.poster[data-variant$="-parents"] .body-copy p:last-child .phrase:first-child { display: block; }
 .body-copy p+p { margin-top: 8px; }
-.date { text-align: center; margin-top: 28px; }
+.date { text-align: center; margin-top: 24px; }
 .date-main { font: 600 25px/1.4 'Wedding Serif',serif; color: ${colors.brandDeep}; }
-.date-secondary { margin-top: 8px; font-size: 16px; line-height: 1.6; white-space: nowrap; }
+.date-secondary { margin-top: 6px; font-size: 16px; line-height: 1.6; white-space: nowrap; color: ${colors.muted}; }
 .date-secondary .weekday { margin-right: 10px; }
-.venue { margin-top: 28px; padding-top: 25px; border-top: 1px solid ${colors.rule}; }
+.venue { margin-top: 22px; padding-top: 20px; border-top: 1px solid ${colors.rule}; }
+.venue-label { margin-bottom: 6px; color: ${colors.muted}; font-size: 14px; line-height: 1.5; letter-spacing: .08em; }
 .venue h2 { font: 600 23px/1.4 'Wedding Serif',serif; color: ${colors.brandDeep}; margin-bottom: 7px; }
-.address { font-size: 17px; line-height: 1.65; text-wrap: pretty; }
+.address { color: ${colors.muted}; font-size: 17px; line-height: 1.65; text-wrap: pretty; }
 .schedule { margin-top: 22px; }
-.schedule-row { display: grid; grid-template-columns: 94px minmax(0,1fr); column-gap: 12px; font-size: 18px; line-height: 1.55; }
-.schedule-row+.schedule-row { margin-top: 14px; }
+.schedule-row { position: relative; display: grid; grid-template-columns: 94px minmax(0,1fr); column-gap: 24px; padding-bottom: 14px; font-size: 18px; line-height: 1.55; }
+.schedule-row:last-child { padding-bottom: 0; }
+.schedule-row:not(:last-child)::before { content: ''; position: absolute; left: 106px; top: 14px; bottom: -14px; width: 1px; background: ${colors.rule}; }
+.schedule-row::after { content: ''; position: absolute; left: 103px; top: 10px; width: 7px; height: 7px; border: 1px solid ${colors.brandDeep}; border-radius: 50%; background: ${colors.qrLight}; }
 .schedule dt { color: ${colors.brandDeep}; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.schedule-row[data-event="arrival"], .schedule-row[data-event="arrival"] dt { color: ${colors.muted}; }
 .schedule dd span { display: block; word-break: keep-all; overflow-wrap: break-word; }
-.location { color: ${colors.ink}; }
-.signature { text-align: center; margin-top: 30px; color: ${colors.brandDeep}; font: 600 21px/1.5 'Wedding Serif',serif; white-space: nowrap; }
-.codes { display: flex; justify-content: center; gap: 44px; margin-top: 30px; }
+.location { color: ${colors.muted}; font-size: 17px; }
+.signature { text-align: center; margin-top: 24px; color: ${colors.brandDeep}; font: 600 21px/1.5 'Wedding Serif',serif; white-space: nowrap; }
+.codes { display: flex; justify-content: center; gap: 36px; margin-top: 20px; }
 .code { text-align: center; width: 100px; }
 .qr-slot { position: relative; width: 100px; height: 100px; background: ${colors.qrLight}; }
 .qr-slot img { position: absolute; inset: 0; margin: auto; image-rendering: pixelated; }
-.code p { margin-top: 7px; font-size: 17px; color: ${colors.brandDeep}; }
-.contact { text-align: center; margin-top: 24px; font-size: 16px; line-height: 1.6; }
-.contact .phone { display: block; margin-top: 2px; font-size: 18px; letter-spacing: .025em; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.code p { margin-top: 5px; font-size: 16px; color: ${colors.muted}; }
 </style></head>
 <body><article class="poster" data-variant="${variant}">
   <div class="photo"><img alt="新人挥手婚纱照" src="data:image/png;base64,${photo.toString('base64')}"><div class="photo-heading">${title}</div></div>
@@ -90,11 +94,10 @@ h1 { font: 600 42px/1.35 'Wedding Serif',serif; letter-spacing: .06em; }
   <div class="info">
     <div class="body-copy">${item.bodyParagraphs.map(paragraph => `<p>${paragraph.split('，').map((phrase, index, phrases) => `<span class="phrase">${e(phrase)}${index < phrases.length - 1 ? '，' : ''}</span>`).join('')}</p>`).join('')}</div>
     <div class="date"><p class="date-main">${e(dateMain)}</p><p class="date-secondary"><span class="weekday">${e(wedding.date.weekday)}</span><span>${e(wedding.date.lunarFull)}</span></p></div>
-    <div class="venue"><h2>${e(wedding.venue.name)}</h2><p class="address">${e(wedding.venue.address)}</p></div>
-    <dl class="schedule">${wedding.schedule.map(event => `<div class="schedule-row"><dt>${e(event.timeLabel)}</dt><dd><span>${e(event.title)}</span>${event.location ? `<span class="location">${e(event.location)}</span>` : ''}</dd></div>`).join('')}</dl>
+    <div class="venue"><p class="venue-label">${e(copy.ui.venueHeading)}</p><h2>${e(item.venueName)}</h2><p class="address">${e(wedding.venue.address)}</p></div>
+    <dl class="schedule">${wedding.schedule.map(event => `<div class="schedule-row" data-event="${e(event.id)}"><dt>${e(event.timeLabel)}</dt><dd><span>${e(event.title)}</span>${event.location ? `<span class="location">${e(event.location)}</span>` : ''}</dd></div>`).join('')}</dl>
     ${item.signature ? `<p class="signature">${e(item.signature)}</p>` : ''}
     <div class="codes">${codes.map(code => `<div class="code"><div class="qr-slot"><img src="data:image/png;base64,${code.buffer.toString('base64')}" width="${code.pixels / scale}" height="${code.pixels / scale}" alt="${e(code.label)}二维码"></div><p>${e(code.label)}</p></div>`).join('')}</div>
-    <p class="contact">联系人：${e(wedding.contact.name)}<span class="phone">${e(wedding.contact.phone)}</span></p>
   </div>
 </article></body></html>`
 }

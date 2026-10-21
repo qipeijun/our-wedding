@@ -54,9 +54,10 @@ try {
         names: await renderedFonts(page, '.person'),
         body: await renderedFonts(page, '.body-copy .phrase'),
         signature: variantCopy.signature ? await renderedFonts(page, '.signature') : [],
+        venue: await renderedFonts(page, '.venue h2'),
       }
-      for (const fonts of [actualFonts.names, actualFonts.signature].filter(fonts => fonts.length)) {
-        assert.ok(fonts.every(font => font.isCustomFont && /Wedding/.test(font.familyName)), '姓名与署名不允许缺字回退')
+      for (const fonts of [actualFonts.names, actualFonts.signature, actualFonts.venue].filter(fonts => fonts.length)) {
+        assert.ok(fonts.every(font => font.isCustomFont && /Wedding/.test(font.familyName)), '姓名、署名与酒店名称不允许缺字回退')
       }
       assert.ok(actualFonts.body.some(font => /PingFang/.test(font.familyName)), '正文必须使用实际加载的PingFang SC')
       const root = page.locator('.poster')
@@ -64,11 +65,17 @@ try {
       assert.equal(title, variantCopy.title)
       const text = `${title}\n${await root.innerText()}`
       const compact = text.replace(/\s/g, '')
-      for (const field of [dateMain, wedding.date.weekday, ...variantCopy.names.flatMap(person => [person.name, person.relation ?? '']), ...variantCopy.bodyParagraphs, wedding.date.lunarFull, wedding.venue.name, wedding.venue.address, wedding.contact.phone, ...wedding.schedule.flatMap(item => [item.timeLabel, item.title, item.location ?? ''])]) {
+      for (const field of [dateMain, wedding.date.weekday, ...variantCopy.names.flatMap(person => [person.name, person.relation ?? '']), ...variantCopy.bodyParagraphs, wedding.date.lunarFull, variantCopy.venueName, wedding.venue.address, ...wedding.schedule.flatMap(item => [item.timeLabel, item.title, item.location ?? ''])]) {
         assert.ok(compact.includes(field.replace(/\s/g, '')), `${variant} 缺少 ${field}`)
       }
       if (variantCopy.signature) assert.ok(compact.includes(variantCopy.signature.replace(/\s/g, '')))
       else assert.equal(await page.locator('.signature').count(), 0)
+      assert.equal(await page.locator('.venue h2').innerText(), variantCopy.venueName)
+      assert.equal(await page.locator('.venue .venue-label').innerText(), copy.ui.venueHeading)
+      // 海报以双码收尾；H5仍保留独立的联系入口，新人姓名照常展示。
+      assert.equal(await page.locator('.contact, .phone, a[href^="tel:"]').count(), 0)
+      assert.ok(!compact.includes(wedding.contact.phone), '海报不展示联系电话')
+      assert.doesNotMatch(compact, /联系人|联系电话/)
       assert.doesNotMatch(compact, /14:00|张先生|李女士|2025年|梅林大街|https?:/)
       const photoBounds = (await page.locator('.photo>img').boundingBox())!
       assert.ok(Math.abs(photoBounds.height / photoBounds.width - sourceMetadata.height! / sourceMetadata.width!) < .001, '照片必须完整保持原比例')

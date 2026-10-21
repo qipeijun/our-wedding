@@ -1,6 +1,6 @@
 <template>
   <dl class="schedule-list">
-    <div v-for="item in wedding.schedule" :key="item.id" class="schedule-row">
+    <div v-for="item in wedding.schedule" :key="item.id" class="schedule-row" :class="{ 'is-suggested': item.id === 'arrival' }">
       <dt><time>{{ item.time }}</time></dt>
       <dd>{{ item.title }}<span v-if="item.location" class="schedule-location">{{ item.location }}</span></dd>
     </div>

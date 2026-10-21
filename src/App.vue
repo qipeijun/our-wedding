@@ -29,7 +29,9 @@
         <h2 id="welcome-title"><span v-for="line in copy.h5.welcomeTitle" :key="line">{{ line }}</span></h2>
       </div>
       <figure class="rings-photo reveal"><WeddingPhoto :photo="photoById('rings')" /></figure>
-      <div class="invitation-copy section-pad reveal"><p v-for="paragraph in copy.h5.invitationParagraphs" :key="paragraph">{{ paragraph }}</p></div>
+      <div class="invitation-copy section-pad reveal">
+        <p v-for="paragraph in copy.h5.invitationParagraphs" :key="paragraph"><span v-for="(phrase, index) in paragraph.split('，')" :key="index" class="invitation-phrase">{{ phrase }}{{ index < paragraph.split('，').length - 1 ? '，' : '' }}</span></p>
+      </div>
     </section>
 
     <section class="response-section" aria-label="我们的婚纱照">
