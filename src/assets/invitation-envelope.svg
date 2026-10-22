@@ -1,0 +1,83 @@
+<svg viewBox="0 0 360 345" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <title id="unseal-title">一封系着红线的婚礼请柬</title>
+  <desc id="unseal-desc">系好的蝴蝶结束着婚礼请柬。等待时两根尾绳自然轻摆。封面就绪后，线尾牵动带耳解开，红绳向两侧退开，信封开启，照片从中抽出并展开。</desc>
+  <defs>
+    <!-- 共用中心线使绳身与柔光随动；材质保持同一光照，解开后不露分段色差。 -->
+    <path id="unseal-cord-wrap-left" data-ribbon="wrap-left" d="M40.000 218.000 C88.000 219.000 136.000 220.000 180.000 220.000" />
+    <path id="unseal-cord-wrap-right" data-ribbon="wrap-right" d="M320.000 218.000 C272.000 219.000 224.000 220.000 180.000 220.000" />
+    <path id="unseal-cord-left" data-ribbon="left" d="M180.000 220.000 C159.840 183.250 110.280 162.250 96.000 185.000 C81.720 207.750 133.800 241.000 180.000 220.000" />
+    <path id="unseal-cord-right" data-ribbon="right" d="M180.000 220.000 C201.120 184.300 253.040 163.900 268.000 186.000 C282.960 208.100 228.400 240.400 180.000 220.000" />
+    <path id="unseal-cord-left-tail" data-ribbon="left-tail" d="M180.000 220.000 C160.000 250.000 140.000 285.000 111.000 303.000" />
+    <path id="unseal-cord-right-tail" data-ribbon="right-tail" d="M180.000 220.000 C195.000 251.000 205.000 291.000 242.000 306.000" />
+    <linearGradient id="cord-red" gradientUnits="userSpaceOnUse" x1="105" y1="173" x2="236" y2="303">
+      <stop offset="0" stop-color="#AC3027" />
+      <stop offset=".35" stop-color="#BC3F2E" />
+      <stop offset=".72" stop-color="#AE3327" />
+      <stop offset="1" stop-color="#A33027" />
+    </linearGradient>
+    <linearGradient id="cord-light" gradientUnits="userSpaceOnUse" x1="112" y1="173" x2="226" y2="307">
+      <stop offset="0" stop-color="#DC9270" stop-opacity=".08" />
+      <stop offset=".25" stop-color="#DC9270" stop-opacity=".55" />
+      <stop offset=".52" stop-color="#DC9270" stop-opacity="0" />
+      <stop offset=".76" stop-color="#D78360" stop-opacity=".38" />
+      <stop offset="1" stop-color="#D78360" stop-opacity="0" />
+    </linearGradient>
+    <clipPath id="bow-neck-window"><ellipse cx="180" cy="220" rx="29" ry="26" /></clipPath>
+    <mask id="bow-left-under" maskUnits="userSpaceOnUse" x="0" y="0" width="360" height="345" style="mask-type:luminance">
+      <rect width="360" height="345" fill="white" />
+      <path data-mask="under-left" d="M180.000 220.000 C201.120 184.300 253.040 163.900 268.000 186.000 C282.960 208.100 228.400 240.400 180.000 220.000 M180.000 220.000 C195.000 251.000 205.000 291.000 242.000 306.000" clip-path="url(#bow-neck-window)" fill="none" stroke="black" stroke-width="4.9" stroke-linecap="round" />
+    </mask>
+    <mask id="bow-wrap-under" maskUnits="userSpaceOnUse" x="0" y="0" width="360" height="345" style="mask-type:luminance">
+      <rect width="360" height="345" fill="white" />
+      <path data-mask="under-wrap" d="M180.000 220.000 C159.840 183.250 110.280 162.250 96.000 185.000 C81.720 207.750 133.800 241.000 180.000 220.000 M180.000 220.000 C201.120 184.300 253.040 163.900 268.000 186.000 C282.960 208.100 228.400 240.400 180.000 220.000" clip-path="url(#bow-neck-window)" fill="none" stroke="black" stroke-width="4.9" stroke-linecap="round" />
+    </mask>
+    <linearGradient id="unseal-paper" x1="0" y1="0" x2=".75" y2="1">
+      <stop offset="0" stop-color="#FFFDF9" /><stop offset="1" stop-color="#F2E3D2" />
+    </linearGradient>
+    <linearGradient id="unseal-flap" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFFCF8" /><stop offset="1" stop-color="#F8EDE0" />
+    </linearGradient>
+    <pattern id="unseal-fibres" width="13" height="17" patternUnits="userSpaceOnUse">
+      <path d="M2 3h.7 M8 11h.5" stroke="#9E7158" stroke-width=".55" opacity=".1" />
+    </pattern>
+    <clipPath id="unseal-pocket"><rect x="40" y="0" width="280" height="315" /></clipPath>
+  </defs>
+  <g class="envelope-body">
+    <rect x="40" y="145" width="280" height="170" rx="1.5" fill="#F0DFCC" stroke="#DDC9BC" stroke-width=".8" />
+    <path class="flap-back" d="M40 145 H320 L188 242 Q180 248 172 242Z" fill="#F0DFCC" stroke="#DDC9BC" stroke-width=".8" />
+  </g>
+  <g clip-path="url(#unseal-pocket)">
+    <g class="letter">
+      <rect x="85" y="156" width="190" height="285" fill="#FFFCF7" />
+      <image class="letter-photo" x="91" y="162" width="178" height="267" preserveAspectRatio="xMidYMid meet" />
+      <image class="letter-title" x="105.24" y="172.68" width="149.52" height="55.32" preserveAspectRatio="xMidYMid meet" />
+    </g>
+  </g>
+  <g class="envelope-body">
+    <path d="M40 145 L172 234 Q180 240 188 234 L320 145 V314 Q320 315 319 315 H41 Q40 315 40 314Z" fill="url(#unseal-paper)" stroke="#DDC9BC" stroke-width=".8" />
+    <path d="M41 314 L153 230 Q180 211 207 230 L319 314" fill="url(#unseal-flap)" />
+    <path class="seam" d="M41 314 L151 230 M209 230 L319 314 M41 146 L152 222 M208 222 L319 146" />
+    <path d="M42 313.8 H318" stroke="#FFFCF7" stroke-width="1.2" />
+    <path class="flap-front" d="M40 145 H320 L188 242 Q180 248 172 242Z" fill="url(#unseal-flap)" stroke="#DDC9BC" stroke-width=".8" />
+    <rect x="40" y="145" width="280" height="170" fill="url(#unseal-fibres)" />
+  </g>
+  <g class="ribbon-untying">
+  <g class="ribbon-wrap" mask="url(#bow-wrap-under)">
+    <use href="#unseal-cord-wrap-left" class="ribbon" /><use href="#unseal-cord-wrap-left" class="cord-light" />
+    <use href="#unseal-cord-wrap-right" class="ribbon" /><use href="#unseal-cord-wrap-right" class="cord-light" />
+  </g>
+  <g class="ribbon-release">
+    <g class="loop-left" mask="url(#bow-left-under)"><use href="#unseal-cord-left" class="ribbon" /><use href="#unseal-cord-left" class="cord-light" /></g>
+    <g class="loop-right"><use href="#unseal-cord-right" class="ribbon" /><use href="#unseal-cord-right" class="cord-light" /></g>
+    <g class="tail-left" mask="url(#bow-left-under)"><use href="#unseal-cord-left-tail" class="ribbon" /><use href="#unseal-cord-left-tail" class="cord-light" /></g>
+    <g class="tail-right"><use href="#unseal-cord-right-tail" class="ribbon" /><use href="#unseal-cord-right-tail" class="cord-light" /></g>
+    <g class="knot">
+      <!-- 受压处短而深，迎光处细而淡，不给整条绳添加硬包边。 -->
+      <path d="M173 226 Q181 222 188 215" fill="none" stroke="#71352A" stroke-width="6.2" stroke-linecap="round" opacity=".16" transform="translate(0 .6)" />
+      <path d="M173 224.7 Q180 221 188 214" fill="none" stroke="#8F2E25" stroke-width="5.8" stroke-linecap="round" />
+      <path d="M173 223.8 Q181 218.9 188 213.5" fill="none" stroke="url(#cord-red)" stroke-width="4.6" stroke-linecap="round" />
+      <path d="M174.2 222.5 Q180 219 185.5 215.4" fill="none" stroke="#DB9673" stroke-width=".7" stroke-linecap="round" opacity=".43" />
+    </g>
+  </g>
+  </g>
+</svg>

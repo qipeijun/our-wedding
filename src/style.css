@@ -37,11 +37,10 @@ img { display: block; max-width: 100%; }
 .wedding-photo,.wedding-photo img { display: block; width: 100%; height: auto; }
 
 /* 标题落在原图头顶红底范围，照片不裁切，也不以动画改变人物动作。 */
-.cover { display: flex; flex-direction: column; min-height: 100dvh; background: var(--brand-deep); color: var(--paper); }
+.cover { position: relative; transform-origin: 0 0; display: flex; flex-direction: column; min-height: 100dvh; background: var(--brand-deep); color: var(--paper); }
 .cover > .hero-photo { flex-shrink: 0; }
 .hero-photo { position: relative; }
 .hero-heading { position: absolute; top: 4%; left: 8%; width: 84%; pointer-events: none; }
-.hero-heading.is-ready { animation: title-arrive 1.2s cubic-bezier(.16,1,.3,1) both; }
 .hero-heading img { width: 100%; height: auto; }
 .hero-heading h1 { font-size: clamp(1.8824rem,9vw,2.9412rem); text-align: center; }
 .cover-invite { position: relative; display: flex; flex: 1; flex-direction: column; justify-content: center; padding: 28px var(--gutter) max(28px,env(safe-area-inset-bottom)); text-align: center; }
@@ -132,10 +131,7 @@ img { display: block; max-width: 100%; }
 .photo-error button { min-height: 48px; padding: 8px 16px; margin-top: 8px; border: 1px solid currentColor; background: none; color: inherit; }
 .copy-manual { margin-top: 8px; text-align: left; font-size: 0.8235rem; }
 .copy-manual p { margin-top: 8px; white-space: pre-line; user-select: text; -webkit-user-select: text; }
-.essential-info { max-width: 560px; margin: auto; padding: 32px 24px; }
-.essential-info p { margin-top: 16px; }
 
-@keyframes title-arrive { from { opacity: 0; transform: translateY(12px) scale(.96); } to { opacity: 1; transform: none; } }
 @keyframes page-reveal { from { opacity: .3; transform: translateY(18px); } to { opacity: 1; transform: none; } }
 .is-revealed { animation: page-reveal .85s cubic-bezier(.16,1,.3,1) both; }
 @media (max-width: 359px) {
@@ -154,5 +150,6 @@ img { display: block; max-width: 100%; }
 }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  *,*::before,*::after { animation: none!important; transition: none!important; }
+  /* 启动占位的零时长可见性切换是超时出口，不能随动态效果一起禁用。 */
+  *:not(.boot-stage):not(.essential-info),*::before,*::after { animation: none!important; transition: none!important; }
 }

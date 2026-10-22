@@ -4,6 +4,7 @@ import { mkdir, readFile, readdir, rename, writeFile } from 'node:fs/promises'
 import { selectedPhotos } from '../src/config/photos'
 import priorInventory from '../docs/assets/inventory.json'
 import reviewData from '../config/photo-review.json'
+import { prepareLoadingAssets } from './lib/loading-assets'
 const reviews: Record<string, { sha256: string; viewedOn: string; actuallyViewed: boolean }> = reviewData
 
 await mkdir('public/photos', { recursive: true })
@@ -46,6 +47,7 @@ for (const file of (await readdir('source')).filter(file => /\.jpe?g$/i.test(fil
   }
   mapping.push({ ...selected, sha256, width, height, originalActuallyViewed: review.actuallyViewed, reviewDate: review.viewedOn, crop: 'none', focalPosition: 'not needed: intrinsic ratio', selected: selected.id !== 'formal-fallback', status: selected.id === 'formal-fallback' ? '备用，未使用' : '已选用', outputs, reason: selected.id.startsWith('formal') ? '中式牵手合影保留团扇、衣饰与完整人物；备用图未启用' : '执行包确定的六张照片之一；原比例保留神态和手部，不叠加滤镜' })
 }
+for (const name of await prepareLoadingAssets()) retained.add(name)
 // 旧轮次的网页衍生图移到本地留档，避免随生产构建发布未选用照片。
 await mkdir('artifacts/v2/retired-photos', { recursive: true })
 for (const file of await readdir('public/photos')) {

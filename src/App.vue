@@ -1,13 +1,14 @@
 <template>
-  <main ref="invitation" class="invitation" @click.capture="pauseMusicForDeparture">
+  <InvitationOpening v-if="opening" :ready="!!coverSource && titleArtworkReady" :photo-src="coverSource" :title-src="titleArtwork" :target="coverSection" :started-at="openingStartedAt" @complete="opening = false" />
+  <main ref="invitation" class="invitation" :inert="opening" :aria-busy="opening" @click.capture="pauseMusicForDeparture">
     <BackgroundMusic v-if="wedding.backgroundMusic" ref="backgroundMusic" />
     <section id="top" ref="coverSection" class="cover" aria-label="婚礼封面">
       <div class="hero-photo">
-        <WeddingPhoto :photo="coverPhoto" priority />
-        <header class="hero-heading" :class="{ 'is-ready': titleArtworkReady || titleArtworkFailed }">
+        <WeddingPhoto :photo="coverPhoto" priority @ready="coverSource = $event" />
+        <header class="hero-heading">
           <h1>
-            <span :class="{ 'sr-only': !titleArtworkFailed }">{{ copy.h5.title }}</span>
-            <img v-if="!titleArtworkFailed" :src="titleArtwork" alt="" width="2062" height="763" fetchpriority="high" decoding="async" @load="titleArtworkReady = true" @error="titleArtworkFailed = true" />
+            <span class="sr-only">{{ copy.h5.title }}</span>
+            <img :src="titleArtwork" alt="" width="824" height="305" decoding="sync" @load="titleArtworkReady = true" />
           </h1>
         </header>
       </div>
@@ -72,7 +73,11 @@ import WeddingPhoto from './components/WeddingPhoto.vue'
 import ScheduleList from './components/ScheduleList.vue'
 import VenueGuide from './components/VenueGuide.vue'
 import BackgroundMusic from './components/BackgroundMusic.vue'
+import InvitationOpening from './components/InvitationOpening.vue'
+import titleArtwork from './assets/wedding-title.png?inline'
+import { LOADING_LIMIT_MS } from './motion/opening-flow'
 
+const props = defineProps<{ openingStartedAt: number }>()
 const invitation = ref<HTMLElement>()
 const backgroundMusic = ref<InstanceType<typeof BackgroundMusic>>()
 /** 在导航或拨号交给外部应用前暂停；页内跳转与普通点击不改变音乐选择。 */
@@ -87,12 +92,12 @@ const stickyNavigation = ref<HTMLElement>()
 const pastCover = ref(false)
 // 正文导航完整进入底栏上方的可操作区域时，隐藏重复入口。
 const mainNavigationVisible = ref(false)
-// 标题素材加载失败时显示同一文案的可读字形，仍能识别邀请主题。
-const titleArtworkFailed = ref(false)
-// 等待素材加载后才播放标题入场，慢网下不会提前消耗掉开场动画。
+// 深链接直接到正文，不用开场覆盖宾客主动访问的段落。
+const opening = ref((!location.hash || location.hash === '#top') && performance.now() - props.openingStartedAt < LOADING_LIMIT_MS)
+// 只有真实首屏照片和原手写标题就绪才启封；不根据固定延时假定资源已加载。
+const coverSource = ref('')
 const titleArtworkReady = ref(false)
 const showNavigation = computed(() => pastCover.value && !mainNavigationVisible.value)
-const titleArtwork = `${import.meta.env.BASE_URL}artwork/wedding-title.webp`
 const shortDate = new Intl.DateTimeFormat('zh-CN', { month: 'long', day: 'numeric', timeZone: wedding.date.timeZone }).format(new Date(`${wedding.date.iso}T12:00:00+08:00`))
 let coverObserver: IntersectionObserver | undefined
 let revealObserver: IntersectionObserver | undefined

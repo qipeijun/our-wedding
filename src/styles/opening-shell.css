@@ -1,0 +1,31 @@
+/* 内联进 HTML，和 Vue 开场共用；不等待入口脚本或外部样式。 */
+html { font-size:var(--body-size); background:#eee5da; }
+body { margin:0; }
+.opening-overlay { box-sizing:border-box; font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif; --font-display:"Wedding Serif","Songti SC",serif; }
+.opening-overlay :where(p) { margin:0; }
+.envelope-art > svg { display:block; width:100%; height:auto; overflow:visible; }
+.opening-overlay { position:fixed; inset:0; z-index:30; width:min(100%,var(--content-max)); margin-inline:auto; display:flex; flex-direction:column; align-items:center; padding:44px 18px 28px; background:var(--paper); color:var(--brand-deep); text-align:center; overflow:hidden; --move:cubic-bezier(.37,0,.63,1); --out:cubic-bezier(.33,1,.68,1); }
+.edition { font-size:12px; line-height:1.6; color:var(--muted); }
+.envelope-art { display:block; width:100%; max-width:320px; height:auto; flex-shrink:0; margin:32px 0 12px; overflow:visible; }
+.opening-names { display:flex; justify-content:center; gap:14px; font:600 25px/1.6 var(--font-display); }
+.opening-names i { font:400 italic 18px/1.6 Georgia,serif; align-self:center; opacity:.8; }
+.opening-date { margin-top:10px; font:400 14px/1.6 Georgia,serif; color:var(--muted); }
+.waiting-label { margin-top:36px; font-size:12px; line-height:var(--body-line); color:var(--muted); }
+.seam { fill:none; stroke:#DDC9BC; stroke-width:.8; }
+/* 朱红绳身用克制的局部柔光表现圆润度，避免缎带般的宽亮面。 */
+.ribbon,.cord-light { fill:none; stroke-linecap:round; stroke-linejoin:round; }
+.ribbon { stroke:url(#cord-red); stroke-width:5; }
+.cord-light { stroke:url(#cord-light); stroke-width:1.1; opacity:.46; transform:translate(-.3px,-.45px); }
+.flap-front,.flap-back { transform-origin:180px 145px; }
+.flap-back { opacity:0; transform:scaleY(0); }
+@media (max-width:359px) { .opening-overlay {padding:30px 14px 22px} .envelope-art {margin-top:20px} .opening-names {font-size:23px;gap:10px} .waiting-label {margin-top:26px} }
+@media (min-width:561px) { .opening-overlay {inset-block:32px} }
+/* 脚本迟到时交还真实信息，避免永久空白或反复重播开场。 */
+.boot-stage { animation:boot-dismiss 0s 5s forwards; }
+.essential-info { box-sizing:border-box; width:100%; max-width:var(--content-max); min-height:100dvh; margin:0 auto; padding:40px 28px; background:var(--paper); color:var(--ink); font:17px/1.65 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif; visibility:hidden; animation:boot-reveal 0s 5s forwards; }
+.essential-info h1 { margin:0 0 24px; font:600 28px/1.5 "Songti SC",serif; color:var(--brand-deep); }
+.essential-info h2 { margin:28px 0 12px; font-size:22px; }
+.essential-info p { margin:12px 0; }
+.essential-info a { color:var(--brand-deep); text-underline-offset:4px; }
+@keyframes boot-dismiss { to {visibility:hidden} }
+@keyframes boot-reveal { to {visibility:visible} }

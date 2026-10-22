@@ -7,10 +7,12 @@
     <meta name="description" content="__WEDDING_DESCRIPTION__" />
     <title>__WEDDING_TITLE__</title>
     <link rel="icon" type="image/svg+xml" href="%BASE_URL%favicon.svg" />
-    <link rel="preload" as="image" href="%BASE_URL%artwork/wedding-title.webp" fetchpriority="high" />
+    <!--opening-critical-css-->
+    <noscript><style>.boot-stage{display:none}.essential-info{animation:none;visibility:visible}</style></noscript>
   </head>
   <body>
-    <div id="app"><!--essential-info--></div>
+    <div id="app"><!--opening-shell--></div>
+    <script>document.getElementById('app').dataset.startedAt = String(performance.now())</script>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
