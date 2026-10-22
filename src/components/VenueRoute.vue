@@ -14,7 +14,7 @@
           <use href="#venue-walking-path" class="route-reveal" fill="none" stroke="white" stroke-width="24" stroke-linecap="round" />
         </mask>
       </defs>
-      <g ref="routeElement" class="route-lines" fill="none" stroke="#A93624" stroke-width="2.5" stroke-linecap="round" aria-hidden="true">
+      <g ref="routeElement" class="route-lines" fill="none" stroke="#A93624" stroke-width="4" stroke-linecap="round" aria-hidden="true">
         <use href="#venue-walking-path" class="route-base" vector-effect="non-scaling-stroke" />
         <use href="#venue-walking-path" class="route-ink" vector-effect="non-scaling-stroke" mask="url(#venue-route-reveal)" />
       </g>
@@ -29,12 +29,17 @@ import overviewUrl from '../assets/venue-map-h5.webp'
 const routeElement = ref<SVGGElement | null>(null)
 // 只观察实际线路区域；离开视口暂停，系统减少动态效果时直接展示完整路线。
 const isInView = ref(false)
+// 首轮等待线路主体可见；启动后只暂停与续播，不因滚动反复重头描绘。
+let hasStarted = false
 let observer: IntersectionObserver | undefined
 
 onMounted(() => {
   observer = new IntersectionObserver(entries => {
-    isInView.value = entries.some(entry => entry.isIntersecting)
-  }, { threshold: 0 })
+    for (const entry of entries) {
+      if (entry.isIntersecting && entry.intersectionRatio >= .6) hasStarted = true
+      isInView.value = hasStarted && entry.isIntersecting
+    }
+  }, { threshold: [0, .6] })
   if (routeElement.value) observer.observe(routeElement.value)
 })
 
@@ -43,15 +48,15 @@ onBeforeUnmount(() => observer?.disconnect())
 
 <style scoped>
 .venue-route svg { display: block; width: 100%; height: auto; }
-/* 底线常驻，遮罩按路径自身坐标描绘；线宽独立于地图缩放，手机上保持 2.5px。 */
-.route-base { opacity: .28; }
+/* 4px常驻底线保证随时可读，6px朱砂线强调描绘过程；线宽不随地图缩小。 */
+.route-base { opacity: .42; }
 /* 696.76 为收窄弯路后曲线的近似长度；调整路径时需同步重算。 */
-.route-reveal { stroke-dasharray: 696.76; stroke-dashoffset: 696.76; animation: route-draw 7s linear infinite; animation-play-state: paused; }
-.route-ink { animation: route-fade 7s linear infinite; animation-play-state: paused; }
+.route-reveal { stroke-dasharray: 696.76; stroke-dashoffset: 696.76; animation: route-draw 5.5s linear infinite; animation-play-state: paused; }
+.route-ink { stroke-width: 6; animation: route-fade 5.5s linear infinite; animation-play-state: paused; }
 .is-playing .route-reveal, .is-playing .route-ink { animation-play-state: running; }
-/* 5 秒描完、1 秒停留、1 秒淡出；循环复位时深色线已透明。 */
-@keyframes route-draw { 0% { stroke-dashoffset: 696.76; } 71.4286%, 100% { stroke-dashoffset: 0; } }
-@keyframes route-fade { 0% { opacity: 0; } 2%, 85.7143% { opacity: 1; } 100% { opacity: 0; } }
+/* 3 秒描完、1.5 秒完整停留、1 秒淡出；循环复位时深色线已透明。 */
+@keyframes route-draw { 0% { stroke-dashoffset: 696.76; } 54.5455%, 100% { stroke-dashoffset: 0; } }
+@keyframes route-fade { 0% { opacity: 0; } 2.5455%, 81.8182% { opacity: 1; } 100% { opacity: 0; } }
 @media (prefers-reduced-motion: reduce) {
   .route-reveal { animation: none; stroke-dashoffset: 0; }
   .route-ink { animation: none; opacity: 1; }
